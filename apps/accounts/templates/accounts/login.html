@@ -1,0 +1,46 @@
+{% load tailwind_cli %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_setting.site_name|default:"BakeMaster Bakery ERP" }} - Sign In</title>
+    
+    <!-- Favicon -->
+    {% if site_setting.favicon %}
+        <link rel="icon" href="{{ site_setting.favicon.url }}">
+    {% else %}
+        <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    {% endif %}
+
+    {% tailwind_css %}
+    
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <style>
+        .htmx-request .htmx-indicator { display: inline-block !important; }
+        .htmx-request .submit-text { opacity: 0; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 flex items-center justify-center min-h-screen font-sans p-4">
+    
+    <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-800">
+        <div class="text-center mb-8">
+            <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 mb-3">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">{{ site_setting.site_name|default:"BakeMaster ERP" }}</h2>
+            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">Artisan Bakery &amp; POS Management System</p>
+        </div>
+
+        <div id="login-form-container">
+            {% include 'accounts/partials/login_form.html' %}
+        </div>
+    </div>
+
+</body>
+</html>

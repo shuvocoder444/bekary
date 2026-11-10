@@ -1,0 +1,370 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<div class="w-full max-w-full space-y-6 p-4 sm:p-6 lg:p-8" x-data="{ showEmpModal: false, showPayModal: false, selectedEmpSalary: 0 }">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+        Staff &amp; Payroll Management
+      </h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Manage bakery staff (head bakers, pastry chefs, cashiers, helpers), monthly payroll, and payslip generation.
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <button
+        type="button"
+        @click="showEmpModal = true"
+        class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 transition"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+        </svg>
+        Add Employee
+      </button>
+      <button
+        type="button"
+        @click="showPayModal = true"
+        class="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 transition"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Disburse / Pay Salary
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Active Staff</span>
+      <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-2">{{ total_employees }} Employees</h3>
+      <p class="text-xs text-gray-400 mt-1">Bakers, pastry chefs &amp; front counter</p>
+    </div>
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <span class="text-xs font-semibold uppercase tracking-wider text-amber-600">Monthly Payroll Budget</span>
+      <h3 class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2">${{ monthly_payroll_budget|floatformat:2 }}</h3>
+      <p class="text-xs text-gray-400 mt-1">Fixed monthly base salaries</p>
+    </div>
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Total Disbursed</span>
+      <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">${{ total_disbursed|floatformat:2 }}</h3>
+      <p class="text-xs text-gray-400 mt-1">Processed salary payments</p>
+    </div>
+  </div>
+
+  <!-- Employees Roster -->
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div class="border-b border-gray-100 p-5 dark:border-gray-800">
+      <h2 class="font-bold text-gray-900 dark:text-white">Bakery Staff Roster</h2>
+      <p class="text-xs text-gray-500 dark:text-gray-400">Kitchen brigade and customer service personnel</p>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+        <thead class="bg-gray-50 text-xs uppercase font-semibold text-gray-500 dark:bg-gray-800/60 dark:text-gray-400">
+          <tr>
+            <th class="px-5 py-3.5">ID</th>
+            <th class="px-5 py-3.5">Name</th>
+            <th class="px-5 py-3.5">Designation</th>
+            <th class="px-5 py-3.5">Phone &amp; Email</th>
+            <th class="px-5 py-3.5">Basic Salary</th>
+            <th class="px-5 py-3.5">Joining Date</th>
+            <th class="px-5 py-3.5 text-right">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          {% for emp in employees %}
+          <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition">
+            <td class="px-5 py-4 font-mono font-semibold text-xs text-amber-600 dark:text-amber-400">
+              {{ emp.employee_id }}
+            </td>
+            <td class="px-5 py-4 font-bold text-gray-900 dark:text-white">
+              {{ emp.name }}
+            </td>
+            <td class="px-5 py-4">
+              <span class="rounded bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                {{ emp.designation }}
+              </span>
+            </td>
+            <td class="px-5 py-4 text-xs">
+              <p class="text-gray-900 dark:text-white">{{ emp.phone }}</p>
+              <p class="text-gray-400">{{ emp.email|default:"No email" }}</p>
+            </td>
+            <td class="px-5 py-4 font-bold text-gray-900 dark:text-white">
+              ${{ emp.basic_salary }}
+            </td>
+            <td class="px-5 py-4 text-xs text-gray-400">
+              {{ emp.joining_date }}
+            </td>
+            <td class="px-5 py-4 text-right">
+              <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold
+                {% if emp.status == 'active' %}bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300
+                {% elif emp.status == 'on_leave' %}bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300
+                {% else %}bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300{% endif %}">
+                {{ emp.get_status_display }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Salary Disbursals Table -->
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div class="border-b border-gray-100 p-5 dark:border-gray-800">
+      <h2 class="font-bold text-gray-900 dark:text-white">Recent Payroll Disbursals</h2>
+      <p class="text-xs text-gray-500 dark:text-gray-400">Salary payouts, allowance additions, and official payslips</p>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+        <thead class="bg-gray-50 text-xs uppercase font-semibold text-gray-500 dark:bg-gray-800/60 dark:text-gray-400">
+          <tr>
+            <th class="px-5 py-3.5">Payslip #</th>
+            <th class="px-5 py-3.5">Employee</th>
+            <th class="px-5 py-3.5">Month</th>
+            <th class="px-5 py-3.5">Base</th>
+            <th class="px-5 py-3.5">Allowances + OT</th>
+            <th class="px-5 py-3.5">Deductions</th>
+            <th class="px-5 py-3.5">Net Salary</th>
+            <th class="px-5 py-3.5">Payment Date</th>
+            <th class="px-5 py-3.5">Status</th>
+            <th class="px-5 py-3.5 text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          {% for pay in payments %}
+          <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition">
+            <td class="px-5 py-4 font-mono font-semibold text-xs text-amber-600 dark:text-amber-400">
+              {{ pay.payslip_number }}
+            </td>
+            <td class="px-5 py-4 font-bold text-gray-900 dark:text-white">
+              {{ pay.employee.name }}
+            </td>
+            <td class="px-5 py-4 text-xs font-semibold text-gray-700 dark:text-gray-300">
+              {{ pay.month_year }}
+            </td>
+            <td class="px-5 py-4 text-xs">
+              ${{ pay.basic_salary }}
+            </td>
+            <td class="px-5 py-4 text-xs text-emerald-600 dark:text-emerald-400">
+              +${{ pay.allowances|add:pay.overtime_pay }}
+            </td>
+            <td class="px-5 py-4 text-xs text-rose-500">
+              -${{ pay.deductions }}
+            </td>
+            <td class="px-5 py-4 font-bold text-base text-gray-900 dark:text-white">
+              ${{ pay.net_salary }}
+            </td>
+            <td class="px-5 py-4 text-xs text-gray-400">
+              {{ pay.payment_date }}
+            </td>
+            <td class="px-5 py-4">
+              <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold
+                {% if pay.payment_status == 'paid' %}bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300
+                {% else %}bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300{% endif %}">
+                {{ pay.get_payment_status_display }}
+              </span>
+            </td>
+            <td class="px-5 py-4 text-right">
+              <a
+                href="{% url 'payslip_view' pay.payslip_number %}"
+                class="inline-flex items-center gap-1 rounded bg-gray-100 dark:bg-gray-800 px-2.5 py-1 text-xs font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400 transition"
+              >
+                View Payslip
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="10" class="p-8 text-center text-sm text-gray-400">
+              No salary disbursals logged yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add Employee Modal -->
+  <div x-show="showEmpModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" x-cloak>
+    <div @click.outside="showEmpModal = false" class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900 border border-gray-200 dark:border-gray-800 max-h-[90vh] overflow-y-auto">
+      <div class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Add Bakery Employee</h3>
+        <button type="button" @click="showEmpModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+
+      <form action="{% url 'employee_create' %}" method="POST" hx-post="{% url 'employee_create' %}" hx-target="#main-content" class="space-y-4">
+        {% csrf_token %}
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Employee ID *</label>
+            {{ emp_form.employee_id }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Full Name *</label>
+            {{ emp_form.name }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Designation *</label>
+            {{ emp_form.designation }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Basic Monthly Salary ($) *</label>
+            {{ emp_form.basic_salary }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Phone Number *</label>
+            {{ emp_form.phone }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Email</label>
+            {{ emp_form.email }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Joining Date</label>
+            {{ emp_form.joining_date }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Status</label>
+            {{ emp_form.status }}
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+          <button type="button" @click="showEmpModal = false" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 dark:border-gray-700 dark:text-gray-300">
+            Cancel
+          </button>
+          <button type="submit" class="rounded-lg bg-amber-600 px-5 py-2 text-sm font-semibold text-white hover:bg-amber-700">
+            Save Employee
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Disburse Salary Modal -->
+  <div x-show="showPayModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" x-cloak x-data="{
+    basic: 0,
+    allowance: 0,
+    overtime: 0,
+    deduction: 0,
+    calcNet() {
+      return Math.max(0, (parseFloat(this.basic) || 0) + (parseFloat(this.allowance) || 0) + (parseFloat(this.overtime) || 0) - (parseFloat(this.deduction) || 0));
+    }
+  }">
+    <div @click.outside="showPayModal = false" class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900 border border-gray-200 dark:border-gray-800 max-h-[90vh] overflow-y-auto">
+      <div class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Disburse / Process Monthly Salary</h3>
+        <button type="button" @click="showPayModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+
+      <form action="{% url 'salary_payment_create' %}" method="POST" hx-post="{% url 'salary_payment_create' %}" hx-target="#main-content" class="space-y-4">
+        {% csrf_token %}
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Employee *</label>
+            {{ pay_form.employee }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Month &amp; Year *</label>
+            {{ pay_form.month_year }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Basic Salary ($) *</label>
+            <div @input="basic = $event.target.value">
+              {{ pay_form.basic_salary }}
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Allowances ($)</label>
+            <div @input="allowance = $event.target.value">
+              {{ pay_form.allowances }}
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Overtime Pay ($)</label>
+            <div @input="overtime = $event.target.value">
+              {{ pay_form.overtime_pay }}
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Deductions ($)</label>
+            <div @input="deduction = $event.target.value">
+              {{ pay_form.deductions }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic Net Calculation Preview Box -->
+        <div class="rounded-xl border border-emerald-200 bg-emerald-50/70 p-3.5 dark:border-emerald-800 dark:bg-emerald-950/40 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-medium text-emerald-800 dark:text-emerald-300 block">Calculated Net Payable Preview</span>
+            <span class="text-[11px] text-emerald-600 dark:text-emerald-400">Basic + Allowances + Overtime - Deductions</span>
+          </div>
+          <span class="text-lg font-bold text-emerald-700 dark:text-emerald-300 font-mono">
+            $<span x-text="calcNet().toFixed(2)">0.00</span>
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Payment Method</label>
+            {{ pay_form.payment_method }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Payment Date</label>
+            {{ pay_form.payment_date }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Status</label>
+            {{ pay_form.payment_status }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Remarks</label>
+            {{ pay_form.remarks }}
+          </div>
+        </div>
+
+        <div class="rounded-lg bg-amber-50 p-3 text-xs text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+          Notice: Once saved as <strong>"Paid"</strong>, this amount is automatically deducted from your liquid funds and booked as a salary expense in the General Ledger.
+        </div>
+
+        <div class="flex justify-end gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+          <button type="button" @click="showPayModal = false" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 dark:border-gray-700 dark:text-gray-300">
+            Cancel
+          </button>
+          <button type="submit" class="rounded-lg bg-amber-600 px-5 py-2 text-sm font-semibold text-white hover:bg-amber-700">
+            Disburse Salary &amp; Generate Payslip
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

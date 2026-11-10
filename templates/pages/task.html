@@ -1,0 +1,67 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="p-4 sm:p-6 lg:p-8 space-y-6 w-full max-w-full">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Kitchen Baking Tasks & Prep Schedule</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Daily bakery production checklist and scheduled cake baking jobs</p>
+        </div>
+        <a href="{% url 'custom_cakes_list' %}" hx-get="{% url 'custom_cakes_list' %}" hx-target="#main-content" hx-push-url="true" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-xl shadow-xs transition">
+            View Custom Cakes Queue &rarr;
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Prep -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 p-5 shadow-xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+                <h3 class="font-bold text-gray-900 dark:text-white text-base">Ingredient Prep & Proofing</h3>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 font-semibold">Morning</span>
+            </div>
+            <div class="space-y-3">
+                <div class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200/60 dark:border-gray-700/60">
+                    <p class="font-medium text-sm text-gray-900 dark:text-white">Sourdough Dough Fermentation</p>
+                    <p class="text-xs text-gray-500 mt-1">Batch #44 - 30 loaves proofing for oven bake</p>
+                </div>
+                <div class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200/60 dark:border-gray-700/60">
+                    <p class="font-medium text-sm text-gray-900 dark:text-white">Croissant Dough Lamination</p>
+                    <p class="text-xs text-gray-500 mt-1">French Butter Fold 3x - Chilling in prep fridge</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- In Oven -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 p-5 shadow-xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+                <h3 class="font-bold text-gray-900 dark:text-white text-base">Active In Oven</h3>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 font-semibold">Baking</span>
+            </div>
+            <div class="space-y-3">
+                <div class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200/60 dark:border-gray-700/60">
+                    <p class="font-medium text-sm text-gray-900 dark:text-white">Red Velvet Cake Sponges (3 tiers)</p>
+                    <p class="text-xs text-gray-500 mt-1">Order #CC-1002 - Deck Oven 2 @ 175°C (25 mins left)</p>
+                </div>
+                <div class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200/60 dark:border-gray-700/60">
+                    <p class="font-medium text-sm text-gray-900 dark:text-white">Brioche Buns & Burger Rolls</p>
+                    <p class="text-xs text-gray-500 mt-1">Rotary Oven 1 - 60 pcs golden crust finish</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorating & Ready -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 p-5 shadow-xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-100 dark:border-gray-700">
+                <h3 class="font-bold text-gray-900 dark:text-white text-base">Decoration & Packing</h3>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 font-semibold">Ready</span>
+            </div>
+            <div class="space-y-3">
+                <div class="p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-200/60 dark:border-gray-700/60">
+                    <p class="font-medium text-sm text-gray-900 dark:text-white">Black Forest Fondant Piping</p>
+                    <p class="text-xs text-gray-500 mt-1">Order #CC-1001 - Message piped: "Happy Birthday Aayan"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

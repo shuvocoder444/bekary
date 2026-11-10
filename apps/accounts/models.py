@@ -1,0 +1,50 @@
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db import models
+
+
+class UserManager(BaseUserManager):
+    def create_user(self, email=None, phone_number=None, password=None, **extra_fields):
+        if not email and not phone_number:
+            raise ValueError('User er obossoi ekta email address othoba phone number thakte hobe.')
+        
+        if email:
+            email = self.normalize_email(email)
+            
+        user = self.model(email=email, phone_number=phone_number, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email=None, phone_number=None, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('role', 'admin') # Superuser default bhabe admin hobe
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser-er obossoi is_staff=True thakte hobe.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser-er obossoi is_superuser=True thakte hobe.')
+
+        return self.create_user(email, phone_number, password, **extra_fields)
+
+
+class User(AbstractUser):
+    ROLE_CHOICES = (
+        ('admin', 'Admin'),
+        ('manager', 'Manager'),
+        ('sr', 'Sales Representative'),
+    )
+    
+    username = None 
+    email = models.EmailField('Email Address', unique=True, null=True, blank=True)
+    phone_number = models.CharField('Phone Number', max_length=15, unique=True, null=True, blank=True)
+    role = models.CharField('User Role', max_length=20, choices=ROLE_CHOICES, default='sr')
+
+    USERNAME_FIELD = 'email' 
+    REQUIRED_FIELDS = [] 
+
+    objects = UserManager()
+
+    def __str__(self):
+        return self.email if self.email else str(self.phone_number)

@@ -1,0 +1,85 @@
+{% load tailwind_cli %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ site_setting.site_name|default:"BakeMaster Bakery ERP" }}</title>
+    
+    <!-- Favicon -->
+    {% if site_setting.favicon %}
+        <link rel="icon" href="{{ site_setting.favicon.url }}">
+    {% else %}
+        <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    {% endif %}
+
+    {% tailwind_css %}
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        if (localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 min-h-screen flex flex-col font-sans">
+
+    {% include 'partials/public_navbar.html' %}
+
+    <main class="flex-grow flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl w-full text-center space-y-8">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-xs font-semibold uppercase tracking-wider">
+                <span>🥖 Artisan Bakery ERP System</span>
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">
+                Modern Bakery Management <br>
+                <span class="text-amber-600 dark:text-amber-400">Fast, Integrated &amp; Production-Ready</span>
+            </h1>
+            
+            <p class="max-w-2xl mx-auto text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+                Streamline counter POS sales, celebration cake bookings, raw ingredients stock, general ledger accounting, and staff payroll in one high-performance interface.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="w-full sm:w-auto px-8 py-3.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-lg transition">
+                        Open Bakery Dashboard &rarr;
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="w-full sm:w-auto px-8 py-3.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-lg transition">
+                        Sign In &rarr;
+                    </a>
+                {% endif %}
+                <a href="{% url 'pos_terminal' %}" class="w-full sm:w-auto px-8 py-3.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 font-bold rounded-xl transition">
+                    POS Counter
+                </a>
+            </div>
+
+            <div class="pt-16 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                <div class="p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                    <div class="text-2xl mb-3">⚡</div>
+                    <h3 class="font-bold text-gray-900 dark:text-white mb-2">Touch POS &amp; Receipts</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Rapid counter billing, cart calculations, instant order tickets, and thermal print receipts.</p>
+                </div>
+                <div class="p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                    <div class="text-2xl mb-3">🎂</div>
+                    <h3 class="font-bold text-gray-900 dark:text-white mb-2">Custom Cake Bookings</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Flavors, tiers, messages, delivery calendar, advance deposits, and kitchen workflow.</p>
+                </div>
+                <div class="p-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                    <div class="text-2xl mb-3">📊</div>
+                    <h3 class="font-bold text-gray-900 dark:text-white mb-2">Ledger &amp; Staff Payroll</h3>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm">Double-entry general ledger, expense tracking, and monthly salary disbursement with payslips.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include 'partials/public_footer.html' %}
+
+</body>
+</html>

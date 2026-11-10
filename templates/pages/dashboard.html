@@ -1,0 +1,306 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<div class="w-full max-w-full space-y-6 p-4 sm:p-6 lg:p-8">
+  <!-- Top Greeting & Quick Actions -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+        Bakery Executive Dashboard
+      </h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Live operations, financial balance, and production overview for today.
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <a
+        href="{% url 'pos_terminal' %}"
+        hx-get="{% url 'pos_terminal' %}"
+        hx-target="#main-content"
+        hx-push-url="true"
+        class="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 transition"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        New POS Sale
+      </a>
+      <a
+        href="{% url 'custom_cakes_list' %}"
+        hx-get="{% url 'custom_cakes_list' %}"
+        hx-target="#main-content"
+        hx-push-url="true"
+        class="inline-flex items-center gap-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+      >
+        <svg class="h-4 w-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M3 21h18M3 10h18v11H3V10z"/>
+        </svg>
+        Book Cake Order
+      </a>
+      <a
+        href="{% url 'transactions_list' %}"
+        hx-get="{% url 'transactions_list' %}"
+        hx-target="#main-content"
+        hx-push-url="true"
+        class="inline-flex items-center gap-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+      >
+        <svg class="h-4 w-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Record Expense
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Metrics Grid -->
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <!-- Today's Sales -->
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Today's Sales</span>
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="mt-4 flex items-baseline justify-between">
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">${{ today_sales|floatformat:2 }}</h3>
+        <span class="text-xs font-medium text-amber-600 dark:text-amber-400">{{ today_orders_count }} orders</span>
+      </div>
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Total Counter & Custom sales</p>
+    </div>
+
+    <!-- Today's Income Inflow -->
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Cash & Bank Inflow</span>
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+          </svg>
+        </div>
+      </div>
+      <div class="mt-4 flex items-baseline justify-between">
+        <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">${{ today_income|floatformat:2 }}</h3>
+        <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">Revenue Received</span>
+      </div>
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Actual collections today</p>
+    </div>
+
+    <!-- Today's Expenses Outflow -->
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Expenses Outflow</span>
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/>
+          </svg>
+        </div>
+      </div>
+      <div class="mt-4 flex items-baseline justify-between">
+        <h3 class="text-2xl font-bold text-rose-600 dark:text-rose-400">${{ today_expenses|floatformat:2 }}</h3>
+        <span class="text-xs font-medium text-rose-600 dark:text-rose-400">Paid Out</span>
+      </div>
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Ingredients, utilities, bills</p>
+    </div>
+
+    <!-- Net Daily Profit -->
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Net Profit</span>
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="mt-4 flex items-baseline justify-between">
+        <h3 class="text-2xl font-bold {% if today_net_profit >= 0 %}text-gray-900 dark:text-white{% else %}text-rose-600{% endif %}">
+          ${{ today_net_profit|floatformat:2 }}
+        </h3>
+        <span class="text-xs font-medium {% if today_net_profit >= 0 %}text-emerald-500{% else %}text-rose-500{% endif %}">
+          {% if today_net_profit >= 0 %}Positive{% else %}Deficit{% endif %}
+        </span>
+      </div>
+      <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Income minus expenses</p>
+    </div>
+  </div>
+
+  <!-- Operational Alerts (Custom Cake Deliveries & Low Stock) -->
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <!-- Upcoming Custom Cake Deliveries -->
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div class="flex items-center justify-between border-b border-gray-100 pb-4 dark:border-gray-800">
+        <div class="flex items-center gap-2">
+          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-pink-100 text-pink-600 dark:bg-pink-950/60 dark:text-pink-400">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M3 21h18M3 10h18v11H3V10z"/>
+            </svg>
+          </div>
+          <h2 class="font-bold text-gray-900 dark:text-white">Pending Cake Deliveries</h2>
+        </div>
+        <a href="{% url 'custom_cakes_list' %}" hx-get="{% url 'custom_cakes_list' %}" hx-target="#main-content" hx-push-url="true" class="text-xs font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400">
+          View All &rarr;
+        </a>
+      </div>
+
+      <div class="mt-4 divide-y divide-gray-100 dark:divide-gray-800">
+        {% for cake in pending_cakes %}
+        <div class="flex items-center justify-between py-3">
+          <div class="space-y-0.5">
+            <div class="flex items-center gap-2">
+              <span class="font-medium text-sm text-gray-900 dark:text-white">{{ cake.flavor }}</span>
+              <span class="rounded bg-pink-50 px-2 py-0.5 text-[11px] font-semibold text-pink-700 dark:bg-pink-950/70 dark:text-pink-300">
+                {{ cake.weight_lbs }} lbs
+              </span>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Customer: <span class="text-gray-700 dark:text-gray-300">{{ cake.order.customer.name|default:"Walk-in" }}</span> |
+              Delivery: <span class="font-medium text-amber-600 dark:text-amber-400">{{ cake.delivery_date }}</span>
+            </p>
+            {% if cake.cake_message %}
+            <p class="text-xs italic text-gray-400">"{{ cake.cake_message }}"</p>
+            {% endif %}
+          </div>
+          <div class="text-right">
+            <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold 
+              {% if cake.order.status == 'baking' %}bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300
+              {% elif cake.order.status == 'ready' %}bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300
+              {% else %}bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300{% endif %}">
+              {{ cake.order.get_status_display }}
+            </span>
+            <p class="mt-1 text-xs font-bold text-gray-900 dark:text-white">${{ cake.order.total_amount }}</p>
+          </div>
+        </div>
+        {% empty %}
+        <div class="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+          No pending celebration cakes scheduled right now.
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Low Stock Raw Material Alerts -->
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <div class="flex items-center justify-between border-b border-gray-100 pb-4 dark:border-gray-800">
+        <div class="flex items-center gap-2">
+          <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="font-bold text-gray-900 dark:text-white">Raw Material Stock Alerts</h2>
+          </div>
+        </div>
+        <a href="{% url 'inventory_list' %}" hx-get="{% url 'inventory_list' %}" hx-target="#main-content" hx-push-url="true" class="text-xs font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400">
+          Manage Inventory &rarr;
+        </a>
+      </div>
+
+      <div class="mt-4 divide-y divide-gray-100 dark:divide-gray-800">
+        {% for mat in low_stock_materials %}
+        <div class="flex items-center justify-between py-3">
+          <div>
+            <p class="font-medium text-sm text-gray-900 dark:text-white">{{ mat.name }}</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Supplier: {{ mat.supplier_name|default:"Not specified" }}
+            </p>
+          </div>
+          <div class="text-right">
+            <span class="inline-flex items-center rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-semibold text-rose-800 dark:bg-rose-950/70 dark:text-rose-300">
+              {{ mat.current_stock }} {{ mat.unit }} remaining
+            </span>
+            <p class="mt-0.5 text-[11px] text-gray-400">Min alert: {{ mat.min_stock_alert }} {{ mat.unit }}</p>
+          </div>
+        </div>
+        {% empty %}
+        <div class="py-6 text-center text-sm text-emerald-600 dark:text-emerald-400">
+          All baking ingredients are well-stocked above alert thresholds!
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Orders & Sales Table -->
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div class="flex items-center justify-between border-b border-gray-100 p-5 dark:border-gray-800">
+      <div>
+        <h2 class="font-bold text-gray-900 dark:text-white">Recent Bakery Orders</h2>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Latest counter POS and pre-order transactions</p>
+      </div>
+      <a href="{% url 'pos_terminal' %}" hx-get="{% url 'pos_terminal' %}" hx-target="#main-content" hx-push-url="true" class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400">
+        Launch POS &rarr;
+      </a>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+        <thead class="bg-gray-50 text-xs uppercase font-semibold text-gray-500 dark:bg-gray-800/60 dark:text-gray-400">
+          <tr>
+            <th class="px-5 py-3.5">Invoice #</th>
+            <th class="px-5 py-3.5">Type</th>
+            <th class="px-5 py-3.5">Customer</th>
+            <th class="px-5 py-3.5">Method</th>
+            <th class="px-5 py-3.5">Amount</th>
+            <th class="px-5 py-3.5">Status</th>
+            <th class="px-5 py-3.5">Time</th>
+            <th class="px-5 py-3.5 text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          {% for ord in recent_orders %}
+          <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition">
+            <td class="px-5 py-4 font-mono font-semibold text-amber-600 dark:text-amber-400">
+              {{ ord.order_number }}
+            </td>
+            <td class="px-5 py-4">
+              <span class="rounded px-2 py-0.5 text-xs font-medium 
+                {% if ord.order_type == 'pos' %}bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300
+                {% elif ord.order_type == 'custom_cake' %}bg-pink-100 text-pink-800 dark:bg-pink-950 dark:text-pink-300
+                {% else %}bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300{% endif %}">
+                {{ ord.get_order_type_display }}
+              </span>
+            </td>
+            <td class="px-5 py-4 font-medium text-gray-900 dark:text-white">
+              {{ ord.customer.name|default:"Walk-in Customer" }}
+            </td>
+            <td class="px-5 py-4 capitalize">
+              {{ ord.get_payment_method_display }}
+            </td>
+            <td class="px-5 py-4 font-bold text-gray-900 dark:text-white">
+              ${{ ord.total_amount }}
+            </td>
+            <td class="px-5 py-4">
+              <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold
+                {% if ord.status == 'completed' %}bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300
+                {% elif ord.status == 'baking' %}bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300
+                {% else %}bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300{% endif %}">
+                {{ ord.get_status_display }}
+              </span>
+            </td>
+            <td class="px-5 py-4 text-xs text-gray-400">
+              {{ ord.created_at|date:"M d, H:i" }}
+            </td>
+            <td class="px-5 py-4 text-right">
+              <a href="{% url 'order_receipt' ord.order_number %}" class="font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400 text-xs">
+                Receipt
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8" class="p-6 text-center text-sm text-gray-400">
+              No orders logged yet today.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

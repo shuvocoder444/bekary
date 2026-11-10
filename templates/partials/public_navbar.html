@@ -1,0 +1,62 @@
+<nav x-data="{ mobileMenu: false }" class="bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+            
+            <a href="{% url 'home' %}" class="flex-shrink-0 font-bold text-2xl text-brand-500 flex items-center gap-2">
+                {% if site_setting.site_logo %}
+                    <img src="{{ site_setting.site_logo.url }}" class="h-8 w-auto dark:hidden" alt="{{ site_setting.site_name }}">
+                    {% if site_setting.site_logo_dark %}
+                        <img src="{{ site_setting.site_logo_dark.url }}" class="h-8 w-auto hidden dark:block" alt="{{ site_setting.site_name }}">
+                    {% else %}
+                        <img src="{{ site_setting.site_logo.url }}" class="h-8 w-auto hidden dark:block" alt="{{ site_setting.site_name }}">
+                    {% endif %}
+                {% else %}
+                    {{ site_setting.site_name|default:"Dashboard" }}
+                {% endif %}
+            </a>
+            
+            <div class="hidden md:flex items-center space-x-8 font-medium">
+                <a href="{% url 'home' %}" class="text-gray-700 dark:text-gray-300 hover:text-brand-500 transition">Home</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="text-gray-700 dark:text-gray-300 hover:text-brand-500 transition">Dashboard</a>
+                    <a href="{% url 'logout' %}" class="px-5 py-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="px-5 py-2 bg-brand-500 text-white rounded-full hover:bg-brand-600 transition shadow-md">Login</a>
+                {% endif %}
+
+                <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', JSON.stringify(darkMode))" class="p-2 text-gray-500 hover:text-gray-900 dark:hover:text-white transition rounded-lg">
+                    <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                    <svg x-show="darkMode" style="display: none;" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="md:hidden flex items-center">
+                <button @click="mobileMenu = !mobileMenu" class="text-gray-500 hover:text-gray-900 dark:hover:text-white focus:outline-none">
+                    <svg x-show="!mobileMenu" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <svg x-show="mobileMenu" style="display: none;" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div x-show="mobileMenu" style="display: none;" x-transition class="md:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shadow-lg absolute w-full left-0">
+        <div class="px-4 pt-2 pb-4 space-y-2 flex flex-col">
+            <a href="{% url 'home' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-brand-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition">Home</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:text-brand-500 hover:bg-gray-50 dark:hover:bg-gray-800 transition">Dashboard</a>
+                <a href="{% url 'logout' %}" class="block w-full text-center px-5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="block w-full text-center px-5 py-2.5 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition shadow-md">Login</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>

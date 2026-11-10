@@ -1,0 +1,116 @@
+{% load tailwind_cli %}
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ site_setting.site_name|default:"Smart Management System" }} | Dashboard</title>
+    
+    <!-- Favicon -->
+    {% if site_setting.favicon %}
+        <link rel="icon" href="{{ site_setting.favicon.url }}">
+    {% else %}
+        <link rel="icon" type="image/x-icon" href="{% static 'images/default.png' %}">
+    {% endif %}
+
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <script>
+        if (localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    {% tailwind_css %}
+</head>
+
+<body
+    x-data="{ 'loaded': true, 'darkMode': JSON.parse(localStorage.getItem('darkMode')) || false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+    x-init="$watch('darkMode', val => { localStorage.setItem('darkMode', JSON.stringify(val)); if (val) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); })"
+    :class="{'dark bg-gray-950': darkMode === true}"
+    class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 font-sans"
+    hx-boost="true"
+>
+    <!-- Global Top Loading Progress Bar -->
+    <div id="loading-bar" class="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-500 via-indigo-500 to-purple-600 z-[999999] opacity-0 transition-opacity duration-300 pointer-events-none"></div>
+
+    <div class="flex h-screen overflow-hidden">
+        
+        {% include 'partials/sidebar.html' %}
+
+        <div class="relative flex flex-col flex-1 overflow-x-hidden overflow-y-auto">
+            
+            {% include 'partials/header.html' %}
+
+            <main id="main-content">
+                {% block content %}
+                {% endblock %}
+            </main>
+            
+        </div>
+    </div>
+
+    <!-- Global Dynamic Modal Container for HTMX -->
+    <div id="modal-container"></div>
+
+    <!-- Global Toast Notifications Container (Top Right, Below Header) -->
+    {% include 'partials/toast.html' %}
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script defer src="{% static 'js/index.js' %}"></script>
+
+    <!-- Global HTMX Resilience & Event Handlers -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Automatic CSRF injection for all HTMX requests
+            document.body.addEventListener('htmx:configRequest', function (evt) {
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+                const csrfToken = getCookie('csrftoken');
+                if (csrfToken) {
+                    evt.detail.headers['X-CSRFToken'] = csrfToken;
+                }
+            });
+
+            // Loading Bar Progress
+            const loadingBar = document.getElementById('loading-bar');
+            document.body.addEventListener('htmx:beforeRequest', function () {
+                if (loadingBar) {
+                    loadingBar.classList.remove('opacity-0');
+                    loadingBar.classList.add('opacity-100', 'animate-pulse');
+                }
+            });
+            document.body.addEventListener('htmx:afterRequest', function () {
+                if (loadingBar) {
+                    loadingBar.classList.remove('opacity-100', 'animate-pulse');
+                    loadingBar.classList.add('opacity-0');
+                }
+            });
+
+            // Global 401/403 Auth Redirect (Session Expiry)
+            document.body.addEventListener('htmx:responseError', function (evt) {
+                if (evt.detail.xhr && (evt.detail.xhr.status === 401 || evt.detail.xhr.status === 403)) {
+                    window.location.href = '/login/?session_expired=1';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

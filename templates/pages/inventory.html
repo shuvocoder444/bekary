@@ -1,0 +1,33 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="p-4 sm:p-6 lg:p-8 space-y-6 w-full max-w-full">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Bakery Stock & Inventory</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">View live stock of raw ingredients and bakery products</p>
+        </div>
+        <a href="{% url 'inventory_list' %}" hx-get="{% url 'inventory_list' %}" hx-target="#main-content" hx-push-url="true" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-xl shadow-xs transition">
+            Raw Materials & Stock Movements &rarr;
+        </a>
+    </div>
+
+    <div class="p-8 text-center bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-xs space-y-4">
+        <div class="w-16 h-16 bg-amber-50 dark:bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mx-auto text-3xl">
+            📦
+        </div>
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Automated Inventory Management</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+            Real-time stock deduction, raw flour/butter tracking, batch receiving, and low-inventory restock alerts are actively monitored in the Raw Materials module.
+        </p>
+        <div class="flex justify-center gap-4 pt-2">
+            <a href="{% url 'inventory_list' %}" hx-get="{% url 'inventory_list' %}" hx-target="#main-content" hx-push-url="true" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-xl shadow-xs transition">
+                Open Inventory Manager
+            </a>
+            <a href="{% url 'products_list' %}" hx-get="{% url 'products_list' %}" hx-target="#main-content" hx-push-url="true" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium text-sm rounded-xl transition">
+                View Bakery Products
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

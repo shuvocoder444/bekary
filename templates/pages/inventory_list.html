@@ -1,0 +1,282 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<div class="w-full max-w-full space-y-6 p-4 sm:p-6 lg:p-8" x-data="{ showMatModal: false, showMoveModal: false }">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+        Raw Materials &amp; Kitchen Stock
+      </h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Track baking ingredients (flour, sugar, butter, eggs, dairy, packaging) and record stock movements.
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <button
+        type="button"
+        @click="showMoveModal = true"
+        class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+        </svg>
+        Log Stock In / Out
+      </button>
+      <button
+        type="button"
+        @click="showMatModal = true"
+        class="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 transition"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Add Raw Material
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Metrics -->
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Total Ingredients</span>
+      <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-2">{{ total_materials }} Items</h3>
+      <p class="text-xs text-gray-400 mt-1">Configured in bakery inventory</p>
+    </div>
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <span class="text-xs font-semibold uppercase tracking-wider text-rose-500">Low Stock Alert</span>
+      <h3 class="text-2xl font-bold text-rose-600 mt-2">{{ low_stock_count }} Items</h3>
+      <p class="text-xs text-gray-400 mt-1">Require re-order from suppliers</p>
+    </div>
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Total Stock Value</span>
+      <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">${{ total_value|floatformat:2 }}</h3>
+      <p class="text-xs text-gray-400 mt-1">Current assets in raw materials</p>
+    </div>
+  </div>
+
+  <!-- Ingredients Inventory Table -->
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div class="border-b border-gray-100 p-5 dark:border-gray-800">
+      <h2 class="font-bold text-gray-900 dark:text-white">Raw Materials &amp; Supplies</h2>
+      <p class="text-xs text-gray-500 dark:text-gray-400">Current on-hand quantities, cost basis, and vendor info</p>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+        <thead class="bg-gray-50 text-xs uppercase font-semibold text-gray-500 dark:bg-gray-800/60 dark:text-gray-400">
+          <tr>
+            <th class="px-5 py-3.5">Ingredient Name</th>
+            <th class="px-5 py-3.5">Unit</th>
+            <th class="px-5 py-3.5">Current Stock</th>
+            <th class="px-5 py-3.5">Min Alert Level</th>
+            <th class="px-5 py-3.5">Cost per Unit</th>
+            <th class="px-5 py-3.5">Total Value</th>
+            <th class="px-5 py-3.5">Supplier</th>
+            <th class="px-5 py-3.5 text-right">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          {% for m in materials %}
+          <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition">
+            <td class="px-5 py-4 font-bold text-gray-900 dark:text-white">
+              {{ m.name }}
+            </td>
+            <td class="px-5 py-4 text-xs font-medium uppercase">
+              {{ m.unit }}
+            </td>
+            <td class="px-5 py-4 font-bold {% if m.is_low_stock %}text-rose-600{% else %}text-gray-900 dark:text-white{% endif %}">
+              {{ m.current_stock }}
+            </td>
+            <td class="px-5 py-4 text-xs text-gray-400">
+              {{ m.min_stock_alert }}
+            </td>
+            <td class="px-5 py-4 font-mono text-xs">
+              ${{ m.unit_cost }}
+            </td>
+            <td class="px-5 py-4 font-bold text-emerald-600 dark:text-emerald-400">
+              ${{ m.total_stock_value }}
+            </td>
+            <td class="px-5 py-4 text-xs text-gray-500 dark:text-gray-400">
+              {{ m.supplier_name|default:"General Supplier" }}
+            </td>
+            <td class="px-5 py-4 text-right">
+              {% if m.is_low_stock %}
+              <span class="inline-flex rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-semibold text-rose-800 dark:bg-rose-950/70 dark:text-rose-300">
+                Low Stock
+              </span>
+              {% else %}
+              <span class="inline-flex rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300">
+                Sufficient
+              </span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recent Movements History -->
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div class="border-b border-gray-100 p-5 dark:border-gray-800">
+      <h2 class="font-bold text-gray-900 dark:text-white">Recent Stock Movement Logs</h2>
+      <p class="text-xs text-gray-500 dark:text-gray-400">Audit trail of kitchen usage, purchases, and waste</p>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+        <thead class="bg-gray-50 text-xs uppercase font-semibold text-gray-500 dark:bg-gray-800/60 dark:text-gray-400">
+          <tr>
+            <th class="px-5 py-3.5">Date</th>
+            <th class="px-5 py-3.5">Ingredient</th>
+            <th class="px-5 py-3.5">Type</th>
+            <th class="px-5 py-3.5">Quantity</th>
+            <th class="px-5 py-3.5">Total Cost</th>
+            <th class="px-5 py-3.5">Note</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          {% for move in movements %}
+          <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition">
+            <td class="px-5 py-3.5 text-xs text-gray-500">
+              {{ move.date }}
+            </td>
+            <td class="px-5 py-3.5 font-bold text-gray-900 dark:text-white">
+              {{ move.material.name }}
+            </td>
+            <td class="px-5 py-3.5">
+              <span class="rounded px-2 py-0.5 text-xs font-semibold
+                {% if move.movement_type == 'purchase' %}bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300
+                {% elif move.movement_type == 'used' %}bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300
+                {% else %}bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300{% endif %}">
+                {{ move.get_movement_type_display }}
+              </span>
+            </td>
+            <td class="px-5 py-3.5 font-bold">
+              {{ move.quantity }} {{ move.material.unit }}
+            </td>
+            <td class="px-5 py-3.5 font-mono text-xs">
+              ${{ move.total_cost }}
+            </td>
+            <td class="px-5 py-3.5 text-xs text-gray-400">
+              {{ move.note|default:"-" }}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="p-6 text-center text-sm text-gray-400">
+              No stock movements logged yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add Material Modal -->
+  <div x-show="showMatModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" x-cloak>
+    <div @click.outside="showMatModal = false" class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+      <div class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Add Raw Material</h3>
+        <button type="button" @click="showMatModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+
+      <form action="{% url 'material_create' %}" method="POST" hx-post="{% url 'material_create' %}" hx-target="#main-content" class="space-y-4">
+        {% csrf_token %}
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Ingredient Name *</label>
+          {{ material_form.name }}
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Unit of Measure *</label>
+            {{ material_form.unit }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Cost per Unit ($)</label>
+            {{ material_form.unit_cost }}
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Current Stock Quantity</label>
+            {{ material_form.current_stock }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Low Stock Alert Threshold</label>
+            {{ material_form.min_stock_alert }}
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Supplier Name</label>
+          {{ material_form.supplier_name }}
+        </div>
+
+        <div class="flex justify-end gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+          <button type="button" @click="showMatModal = false" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 dark:border-gray-700 dark:text-gray-300">
+            Cancel
+          </button>
+          <button type="submit" class="rounded-lg bg-amber-600 px-5 py-2 text-sm font-semibold text-white hover:bg-amber-700">
+            Save Ingredient
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Log Movement Modal -->
+  <div x-show="showMoveModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" x-cloak>
+    <div @click.outside="showMoveModal = false" class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+      <div class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Log Stock In / Out Movement</h3>
+        <button type="button" @click="showMoveModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+
+      <form action="{% url 'stock_movement_create' %}" method="POST" hx-post="{% url 'stock_movement_create' %}" hx-target="#main-content" class="space-y-4">
+        {% csrf_token %}
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Select Raw Material *</label>
+          {{ movement_form.material }}
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Movement Type *</label>
+            {{ movement_form.movement_type }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Quantity *</label>
+            {{ movement_form.quantity }}
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Unit Cost ($)</label>
+            {{ movement_form.unit_cost }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Date *</label>
+            {{ movement_form.date }}
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Notes / Voucher Reference</label>
+          {{ movement_form.note }}
+        </div>
+
+        <div class="flex justify-end gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+          <button type="button" @click="showMoveModal = false" class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 dark:border-gray-700 dark:text-gray-300">
+            Cancel
+          </button>
+          <button type="submit" class="rounded-lg bg-emerald-600 px-5 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+            Apply Stock Update
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="p-4 sm:p-6 lg:p-8 space-y-6 w-full max-w-full">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Design System & UI Elements</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Buttons, badges, alerts, and modal dialog design library</p>
+    </div>
+
+    <!-- Buttons -->
+    <div class="p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-xs space-y-4">
+        <h3 class="font-bold text-gray-900 dark:text-white text-base">Standard Buttons</h3>
+        <div class="flex flex-wrap gap-3">
+            <button class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-xl shadow-xs transition">Primary Amber</button>
+            <button class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-sm rounded-xl shadow-xs transition">Success Green</button>
+            <button class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-medium text-sm rounded-xl shadow-xs transition">Danger Red</button>
+            <button class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium text-sm rounded-xl transition">Secondary Gray</button>
+        </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-xs space-y-4">
+        <h3 class="font-bold text-gray-900 dark:text-white text-base">Status Badges</h3>
+        <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40">Baking In Oven</span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">Ready For Pickup</span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40">Dispatched Delivery</span>
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40">Low Stock Alert</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

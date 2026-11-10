@@ -1,0 +1,35 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="p-4 sm:p-6 lg:p-8 space-y-6 w-full max-w-full">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Bakery Analytics & Visual Insights</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Graphical charts, sales trends, and bakery performance indicators</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-xs space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-gray-900 dark:text-white text-base">Monthly Sales & Revenue Growth</h3>
+                <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 font-semibold">+18.4% YoY</span>
+            </div>
+            <div class="h-56 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-gray-400 text-sm gap-2">
+                <span class="text-3xl">📊</span>
+                <span class="font-medium text-gray-600 dark:text-gray-300">Revenue Performance Curve</span>
+                <span class="text-xs text-gray-400">Aggregated from POS checkout receipts and custom cake invoices</span>
+            </div>
+        </div>
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-xs space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-gray-900 dark:text-white text-base">Customer Growth & Retention</h3>
+                <span class="text-xs px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 font-semibold">94% Return Rate</span>
+            </div>
+            <div class="h-56 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 flex flex-col items-center justify-center text-gray-400 text-sm gap-2">
+                <span class="text-3xl">📈</span>
+                <span class="font-medium text-gray-600 dark:text-gray-300">Repeat Customer Growth Rate</span>
+                <span class="text-xs text-gray-400">Tracked across walk-in shoppers and custom event bookings</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

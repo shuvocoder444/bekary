@@ -1,0 +1,257 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="w-full max-w-full space-y-8 p-4 sm:p-6 lg:p-8">
+    <style>
+        .file-upload-wrapper {
+            color: #4b5563;
+            font-size: 0.75rem;
+            line-height: 1.35;
+        }
+        .dark .file-upload-wrapper {
+            color: #d1d5db !important;
+        }
+        .file-upload-wrapper a {
+            color: #d97706;
+            font-weight: 600;
+            word-break: break-all;
+            text-decoration: underline;
+        }
+        .dark .file-upload-wrapper a {
+            color: #fbbf24 !important;
+        }
+        .file-upload-wrapper input[type="checkbox"] {
+            margin-left: 0.375rem;
+            margin-right: 0.25rem;
+            accent-color: #d97706;
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+        .file-upload-wrapper label {
+            color: inherit;
+            cursor: pointer;
+        }
+    </style>
+
+    <!-- Top Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-gray-200 dark:border-gray-800">
+        <div>
+            <div class="flex items-center gap-2 text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">
+                <span>Dashboard</span>
+                <span>/</span>
+                <span>Settings</span>
+                <span>/</span>
+                <span class="text-gray-500 dark:text-gray-400">Bakery Branding</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Bakery &amp; System Settings</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Configure your bakery name, official contact info, logos, and branding assets.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                System Online
+            </span>
+        </div>
+    </div>
+
+    <!-- Main Settings Form Container -->
+    <form 
+        action="{% url 'site_settings' %}"
+        method="POST"
+        hx-post="{% url 'site_settings' %}" 
+        hx-target="#main-content" 
+        hx-encoding="multipart/form-data" 
+        class="w-full space-y-8"
+    >
+        {% csrf_token %}
+
+        <!-- Section 1: General & Contact Information Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 p-6 sm:p-8 shadow-sm space-y-6">
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">General Information &amp; Contacts</h2>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Bakery store title and public customer contact details</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Site Name -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        Bakery / Brand Name <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        {{ form.site_name }}
+                    </div>
+                    {% if form.site_name.errors %}
+                        <p class="text-xs font-medium text-rose-500 mt-1 flex items-center gap-1">
+                            {{ form.site_name.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                <!-- Contact Email -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        Official Email Address
+                    </label>
+                    <div class="relative">
+                        {{ form.contact_email }}
+                    </div>
+                    {% if form.contact_email.errors %}
+                        <p class="text-xs font-medium text-rose-500 mt-1 flex items-center gap-1">
+                            {{ form.contact_email.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                <!-- Contact Phone -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                        Contact Phone Number
+                    </label>
+                    <div class="relative">
+                        {{ form.contact_phone }}
+                    </div>
+                    {% if form.contact_phone.errors %}
+                        <p class="text-xs font-medium text-rose-500 mt-1 flex items-center gap-1">
+                            {{ form.contact_phone.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Branding & Assets Management Grid -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 p-6 sm:p-8 shadow-sm space-y-6">
+            <div class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Branding &amp; Media Assets</h2>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Upload primary logo, dark mode logo, sidebar icon and favicon</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Light Mode Logo Card -->
+                <div class="flex flex-col justify-between p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/60 border border-gray-200/80 dark:border-gray-700/80 space-y-4 hover:border-amber-500/50 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Light Mode Logo</span>
+                            <span class="px-2 py-0.5 text-[10px] font-semibold bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md">Light</span>
+                        </div>
+                        <div class="h-24 w-full bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 flex items-center justify-center p-3 relative overflow-hidden">
+                            {% if site_setting and site_setting.site_logo %}
+                                <img src="{{ site_setting.site_logo.url }}" class="max-h-full max-w-full object-contain" alt="Light Logo Preview">
+                            {% else %}
+                                <span class="text-xs text-gray-400 font-medium">No logo uploaded</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="file-upload-wrapper">
+                        {{ form.site_logo }}
+                        {% if form.site_logo.errors %}
+                            <p class="text-xs font-medium text-rose-500 mt-1">{{ form.site_logo.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Dark Mode Logo Card -->
+                <div class="flex flex-col justify-between p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/60 border border-gray-200/80 dark:border-gray-700/80 space-y-4 hover:border-amber-500/50 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Dark Mode Logo</span>
+                            <span class="px-2 py-0.5 text-[10px] font-semibold bg-gray-900 text-gray-200 rounded-md">Dark</span>
+                        </div>
+                        <div class="h-24 w-full bg-gray-900 rounded-xl border border-dashed border-gray-700 flex items-center justify-center p-3 relative overflow-hidden">
+                            {% if site_setting and site_setting.site_logo_dark %}
+                                <img src="{{ site_setting.site_logo_dark.url }}" class="max-h-full max-w-full object-contain" alt="Dark Logo Preview">
+                            {% else %}
+                                <span class="text-xs text-gray-500 font-medium">No dark logo uploaded</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="file-upload-wrapper">
+                        {{ form.site_logo_dark }}
+                        {% if form.site_logo_dark.errors %}
+                            <p class="text-xs font-medium text-rose-500 mt-1">{{ form.site_logo_dark.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Sidebar Collapsed Icon -->
+                <div class="flex flex-col justify-between p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/60 border border-gray-200/80 dark:border-gray-700/80 space-y-4 hover:border-amber-500/50 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Collapsed Sidebar Icon</span>
+                            <span class="px-2 py-0.5 text-[10px] font-semibold bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md">Icon</span>
+                        </div>
+                        <div class="h-24 w-full bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 flex items-center justify-center p-3 relative overflow-hidden">
+                            {% if site_setting and site_setting.site_icon %}
+                                <img src="{{ site_setting.site_icon.url }}" class="max-h-full max-w-full object-contain" alt="Icon Preview">
+                            {% else %}
+                                <span class="text-xs text-gray-400 font-medium">No icon</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="file-upload-wrapper">
+                        {{ form.site_icon }}
+                        {% if form.site_icon.errors %}
+                            <p class="text-xs font-medium text-rose-500 mt-1">{{ form.site_icon.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Browser Favicon -->
+                <div class="flex flex-col justify-between p-5 rounded-2xl bg-gray-50 dark:bg-gray-900/60 border border-gray-200/80 dark:border-gray-700/80 space-y-4 hover:border-amber-500/50 transition">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Browser Favicon</span>
+                            <span class="px-2 py-0.5 text-[10px] font-semibold bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-md">.ico / .png</span>
+                        </div>
+                        <div class="h-24 w-full bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 flex items-center justify-center p-3 relative overflow-hidden">
+                            {% if site_setting and site_setting.favicon %}
+                                <img src="{{ site_setting.favicon.url }}" class="w-10 h-10 object-contain" alt="Favicon Preview">
+                            {% else %}
+                                <span class="text-xs text-gray-400 font-medium">No favicon</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="file-upload-wrapper">
+                        {{ form.favicon }}
+                        {% if form.favicon.errors %}
+                            <p class="text-xs font-medium text-rose-500 mt-1">{{ form.favicon.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Submission Button Bar -->
+        <div class="flex items-center justify-end gap-4 pt-4">
+            <button 
+                type="submit" 
+                class="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm text-white bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-500/25 transition-all transform active:scale-95 cursor-pointer"
+            >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Save Bakery Settings</span>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

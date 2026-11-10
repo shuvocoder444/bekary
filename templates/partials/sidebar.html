@@ -1,0 +1,290 @@
+{% load static %}
+<aside
+  id="sidebar"
+  :class="sidebarToggle ? 'translate-x-0 lg:w-[90px]' : '-translate-x-full'"
+  class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-hidden border-r border-gray-200 bg-white px-5 duration-300 ease-linear dark:border-gray-800 dark:bg-black lg:static lg:translate-x-0"
+  @click.outside="sidebarToggle = false"
+>
+  <div
+    :class="sidebarToggle ? 'justify-center' : 'justify-between'"
+    class="sidebar-header flex items-center gap-2 pb-7 pt-8"
+  >
+    {% include 'partials/sidebar_logo.html' %}
+  </div>
+  <div
+    class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear"
+  >
+    <nav x-data="{selected: '{{ request.resolver_match.url_name|default:'dashboard' }}'}">
+      <!-- MAIN OPERATIONS -->
+      <div>
+        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+          <span
+            class="menu-group-title"
+            :class="sidebarToggle ? 'lg:hidden' : ''"
+          >
+            Bakery Operations
+          </span>
+        </h3>
+
+        <ul class="mb-5 flex flex-col gap-2">
+          <!-- Dashboard -->
+          <li>
+            <a
+              href="{% url 'dashboard' %}"
+              hx-get="{% url 'dashboard' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'dashboard'; sidebarToggle = false"
+              class="menu-item group"
+              :class="selected === 'dashboard' ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Dashboard</span>
+            </a>
+          </li>
+
+          <!-- POS Counter Terminal -->
+          <li>
+            <a
+              href="{% url 'pos_terminal' %}"
+              hx-get="{% url 'pos_terminal' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'pos_terminal'; sidebarToggle = false"
+              class="menu-item group"
+              :class="selected === 'pos_terminal' ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">POS Billing</span>
+            </a>
+          </li>
+
+          <!-- Custom Cake Orders -->
+          <li>
+            <a
+              href="{% url 'custom_cakes_list' %}"
+              hx-get="{% url 'custom_cakes_list' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'custom_cakes_list'; sidebarToggle = false"
+              class="menu-item group"
+              :class="selected === 'custom_cakes_list' ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M3 21h18M3 10h18v11H3V10z"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Custom Cakes</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- CATALOG & INVENTORY -->
+      <div>
+        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+          <span class="menu-group-title" :class="sidebarToggle ? 'lg:hidden' : ''">
+            Inventory & Catalog
+          </span>
+        </h3>
+
+        <ul class="mb-5 flex flex-col gap-2">
+          <!-- Products Catalog -->
+          <li>
+            <a
+              href="{% url 'products_list' %}"
+              hx-get="{% url 'products_list' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'products_list'; sidebarToggle = false"
+              class="menu-item group"
+              :class="selected === 'products_list' ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Bakery Products</span>
+            </a>
+          </li>
+
+          <!-- Raw Materials & Stock -->
+          <li>
+            <a
+              href="{% url 'inventory_list' %}"
+              hx-get="{% url 'inventory_list' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'inventory_list'; sidebarToggle = false"
+              class="menu-item group"
+              :class="selected === 'inventory_list' ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Raw Materials</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- FINANCE & ACCOUNTING -->
+      <div>
+        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+          <span class="menu-group-title" :class="sidebarToggle ? 'lg:hidden' : ''">
+            Finance & Ledger
+          </span>
+        </h3>
+
+        <ul class="mb-5 flex flex-col gap-2">
+          <!-- Income & Expenses -->
+          <li>
+            <a
+              href="{% url 'transactions_list' %}"
+              hx-get="{% url 'transactions_list' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'transactions_list'; sidebarToggle = false"
+              class="menu-item group"
+              :class="selected === 'transactions_list' ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Income & Expense</span>
+            </a>
+          </li>
+
+          <!-- General Ledger -->
+          <li>
+            <a
+              href="{% url 'general_ledger' %}"
+              hx-get="{% url 'general_ledger' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'general_ledger'; sidebarToggle = false"
+              class="menu-item group"
+              :class="selected === 'general_ledger' ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">General Ledger</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- HUMAN RESOURCES -->
+      <div>
+        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+          <span class="menu-group-title" :class="sidebarToggle ? 'lg:hidden' : ''">
+            Staff & Payroll
+          </span>
+        </h3>
+
+        <ul class="mb-5 flex flex-col gap-2">
+          <!-- Payroll & Salary -->
+          <li>
+            <a
+              href="{% url 'payroll_dashboard' %}"
+              hx-get="{% url 'payroll_dashboard' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'payroll_dashboard'; sidebarToggle = false"
+              class="menu-item group"
+              :class="selected === 'payroll_dashboard' ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Staff & Salaries</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- CRM & SYSTEM -->
+      <div>
+        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+          <span class="menu-group-title" :class="sidebarToggle ? 'lg:hidden' : ''">
+            Management
+          </span>
+        </h3>
+
+        <ul class="mb-6 flex flex-col gap-2">
+          <!-- Customers -->
+          <li>
+            <a
+              href="{% url 'customers_list' %}"
+              hx-get="{% url 'customers_list' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'customers_list'; sidebarToggle = false"
+              class="menu-item group"
+              :class="selected === 'customers_list' ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Customers</span>
+            </a>
+          </li>
+
+          <!-- Calendar -->
+          <li>
+            <a
+              href="{% url 'calendar' %}"
+              hx-get="{% url 'calendar' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'calendar'; sidebarToggle = false"
+              class="menu-item group"
+              :class="selected === 'calendar' ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Deliveries Calendar</span>
+            </a>
+          </li>
+
+          <!-- Site Settings -->
+          <li>
+            <a
+              href="{% url 'settings' %}"
+              hx-get="{% url 'settings' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'settings'; sidebarToggle = false"
+              class="menu-item group"
+              :class="selected === 'settings' ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Settings</span>
+            </a>
+          </li>
+
+          <!-- Admin Panel Link -->
+          <li>
+            <a
+              href="/admin/"
+              target="_blank"
+              class="menu-item group menu-item-inactive"
+            >
+              <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+              </svg>
+              <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Unfold Admin</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</aside>

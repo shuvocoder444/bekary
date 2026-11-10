@@ -1,0 +1,62 @@
+{% extends base_template %}
+
+{% block content %}
+<div class="p-4 sm:p-6 lg:p-8 space-y-6 w-full max-w-full">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Bakery Client Directory</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Corporate event planners, catering partners, and regular bakery patrons</p>
+        </div>
+        <a href="{% url 'customers_list' %}" hx-get="{% url 'customers_list' %}" hx-target="#main-content" hx-push-url="true" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-xl shadow-xs transition flex items-center justify-center gap-2">
+            <span>Go to Customer CRM &rarr;</span>
+        </a>
+    </div>
+
+    <!-- Client Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="p-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-xs space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="w-10 h-10 rounded-full bg-amber-50 text-amber-600 font-bold flex items-center justify-center">RA</span>
+                <span class="px-2.5 py-0.5 text-xs rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 font-semibold">Active VIP</span>
+            </div>
+            <div>
+                <h3 class="font-bold text-gray-900 dark:text-white text-lg">Rahim Ahmed</h3>
+                <p class="text-xs text-gray-500">Dhaka Event Planners Ltd.</p>
+            </div>
+            <div class="text-xs space-y-1 text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-3">
+                <p>📞 01711-223344</p>
+                <p>✉️ rahim@dhakaevents.com</p>
+            </div>
+        </div>
+        <div class="p-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-xs space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 font-bold flex items-center justify-center">KS</span>
+                <span class="px-2.5 py-0.5 text-xs rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 font-semibold">Active VIP</span>
+            </div>
+            <div>
+                <h3 class="font-bold text-gray-900 dark:text-white text-lg">Karim Sheikh</h3>
+                <p class="text-xs text-gray-500">City Hospitality Group</p>
+            </div>
+            <div class="text-xs space-y-1 text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-3">
+                <p>📞 01899-887766</p>
+                <p>✉️ karim@cityhospitality.com</p>
+            </div>
+        </div>
+        <div class="p-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-xs space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 font-bold flex items-center justify-center">SB</span>
+                <span class="px-2.5 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 font-semibold">Standard</span>
+            </div>
+            <div>
+                <h3 class="font-bold text-gray-900 dark:text-white text-lg">Salma Begum</h3>
+                <p class="text-xs text-gray-500">Custom Celebration Cakes</p>
+            </div>
+            <div class="text-xs space-y-1 text-gray-600 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-3">
+                <p>📞 01922-334455</p>
+                <p>✉️ salma@sylhet.com</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

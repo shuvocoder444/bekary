@@ -1,0 +1,236 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<div class="w-full max-w-full space-y-6 p-4 sm:p-6 lg:p-8" x-data="{ showAddModal: false }">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+        Bakery Menu &amp; Products
+      </h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Manage baked goods, retail pricing, cost margins, stock quantities, and shelf lives.
+      </p>
+    </div>
+    <button
+      type="button"
+      @click="showAddModal = true"
+      class="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 transition"
+    >
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      Add Bakery Item
+    </button>
+  </div>
+
+  <!-- Filter & Search Bar -->
+  <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <!-- Search Form -->
+      <form method="GET" action="{% url 'products_list' %}" class="relative flex-1">
+        <svg class="pointer-events-none absolute left-3 top-3 h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input
+          type="text"
+          name="search"
+          value="{{ search_query }}"
+          placeholder="Search products by name or SKU..."
+          class="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-9 pr-4 text-sm text-gray-900 outline-none focus:border-amber-500 focus:bg-white dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+        />
+        {% if selected_category %}
+        <input type="hidden" name="category" value="{{ selected_category }}" />
+        {% endif %}
+      </form>
+
+      <!-- Category Filter Pills -->
+      <div class="flex flex-wrap gap-1.5">
+        <a
+          href="{% url 'products_list' %}"
+          hx-get="{% url 'products_list' %}"
+          hx-target="#main-content"
+          hx-push-url="true"
+          class="rounded-lg px-3 py-1.5 text-xs font-semibold transition {% if not selected_category %}bg-amber-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300{% endif %}"
+        >
+          All
+        </a>
+        {% for cat in categories %}
+        <a
+          href="{% url 'products_list' %}?category={{ cat.id }}"
+          hx-get="{% url 'products_list' %}?category={{ cat.id }}"
+          hx-target="#main-content"
+          hx-push-url="true"
+          class="rounded-lg px-3 py-1.5 text-xs font-semibold transition {% if selected_category == cat.id|stringformat:'s' %}bg-amber-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300{% endif %}"
+        >
+          {{ cat.name }}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Table -->
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+        <thead class="bg-gray-50 text-xs uppercase font-semibold text-gray-500 dark:bg-gray-800/60 dark:text-gray-400">
+          <tr>
+            <th class="px-5 py-3.5">Product</th>
+            <th class="px-5 py-3.5">SKU</th>
+            <th class="px-5 py-3.5">Category</th>
+            <th class="px-5 py-3.5">Selling Price</th>
+            <th class="px-5 py-3.5">Cost Price</th>
+            <th class="px-5 py-3.5">Margin</th>
+            <th class="px-5 py-3.5">Current Stock</th>
+            <th class="px-5 py-3.5">Shelf Life</th>
+            <th class="px-5 py-3.5 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          {% for p in products %}
+          <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition">
+            <td class="px-5 py-4 font-bold text-gray-900 dark:text-white">
+              {{ p.name }}
+            </td>
+            <td class="px-5 py-4 font-mono text-xs text-amber-600 dark:text-amber-400">
+              {{ p.sku }}
+            </td>
+            <td class="px-5 py-4 text-xs">
+              <span class="rounded bg-gray-100 px-2 py-0.5 text-gray-700 dark:bg-gray-800 dark:text-gray-300 font-medium">
+                {{ p.category.name }}
+              </span>
+            </td>
+            <td class="px-5 py-4 font-bold text-gray-900 dark:text-white">
+              ${{ p.selling_price }}
+            </td>
+            <td class="px-5 py-4 text-xs text-gray-500 dark:text-gray-400">
+              ${{ p.cost_price }}
+            </td>
+            <td class="px-5 py-4">
+              <span class="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                +{{ p.profit_margin }}%
+              </span>
+            </td>
+            <td class="px-5 py-4">
+              <span class="font-semibold {% if p.is_low_stock %}text-rose-500{% else %}text-gray-900 dark:text-white{% endif %}">
+                {{ p.stock_quantity }} {{ p.unit }}
+              </span>
+              {% if p.is_low_stock %}
+              <span class="ml-1 rounded bg-rose-50 px-1.5 py-0.5 text-[10px] font-bold text-rose-600 dark:bg-rose-950/70">Low</span>
+              {% endif %}
+            </td>
+            <td class="px-5 py-4 text-xs text-gray-500 dark:text-gray-400">
+              {{ p.shelf_life_days }} days
+            </td>
+            <td class="px-5 py-4 text-right">
+              <form action="{% url 'product_delete' p.pk %}" method="POST" hx-post="{% url 'product_delete' p.pk %}" hx-target="#main-content" class="inline" onsubmit="return confirm('Are you sure you want to remove {{ p.name }}?');">
+                {% csrf_token %}
+                <button type="submit" class="text-xs font-semibold text-rose-500 hover:text-rose-600 ml-2">
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="9" class="p-8 text-center text-sm text-gray-400">
+              No products found matching your search.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add Product Modal -->
+  <div
+    x-show="showAddModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+    x-cloak
+  >
+    <div
+      @click.outside="showAddModal = false"
+      class="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900 border border-gray-200 dark:border-gray-800 max-h-[90vh] overflow-y-auto"
+    >
+      <div class="mb-4 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Add New Bakery Item</h3>
+        <button type="button" @click="showAddModal = false" class="text-gray-400 hover:text-gray-600">&times;</button>
+      </div>
+
+      <form action="{% url 'product_create' %}" method="POST" hx-post="{% url 'product_create' %}" hx-target="#main-content" hx-encoding="multipart/form-data" class="space-y-4">
+        {% csrf_token %}
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Product Name *</label>
+          {{ form.name }}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Category *</label>
+            {{ form.category }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">SKU / Barcode *</label>
+            {{ form.sku }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Selling Price ($) *</label>
+            {{ form.selling_price }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Cost Price ($)</label>
+            {{ form.cost_price }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Stock Quantity</label>
+            {{ form.stock_quantity }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Unit</label>
+            {{ form.unit }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Shelf Life (Days)</label>
+            {{ form.shelf_life_days }}
+          </div>
+        </div>
+
+        <div class="file-upload-wrapper">
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Product Photo</label>
+          {{ form.image }}
+        </div>
+
+        <div class="flex items-center gap-2">
+          {{ form.is_active }}
+          <label class="text-xs font-semibold text-gray-700 dark:text-gray-300">Active (Visible in POS)</label>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+          <button
+            type="button"
+            @click="showAddModal = false"
+            class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="rounded-lg bg-amber-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 transition"
+          >
+            Save Product
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

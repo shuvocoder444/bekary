@@ -1,0 +1,94 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<div class="w-full max-w-full space-y-6 p-4 sm:p-6 lg:p-8">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+        Bakery Delivery &amp; Orders Calendar
+      </h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Scheduled custom cake orders, event catering, and wholesale pickup dates.
+      </p>
+    </div>
+    <a
+      href="{% url 'custom_cakes_list' %}"
+      hx-get="{% url 'custom_cakes_list' %}"
+      hx-target="#main-content"
+      hx-push-url="true"
+      class="inline-flex items-center gap-2 rounded-lg bg-pink-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-pink-700 transition"
+    >
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      Book New Delivery Order
+    </a>
+  </div>
+
+  <!-- Calendar Scheduled List -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Active Deliveries -->
+    <div class="lg:col-span-2 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 p-6 space-y-4">
+      <h2 class="font-bold text-gray-900 dark:text-white border-b border-gray-100 pb-3 dark:border-gray-800">
+        Upcoming Bakery Schedule
+      </h2>
+
+      <div class="space-y-3">
+        {% for cake in cakes %}
+        <div class="rounded-xl border border-gray-100 p-4 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="rounded bg-pink-100 dark:bg-pink-950 px-2.5 py-0.5 text-xs font-bold text-pink-700 dark:text-pink-300">
+                {{ cake.delivery_date }}
+              </span>
+              <span class="text-xs text-gray-500">{{ cake.delivery_time|default:"All Day" }}</span>
+            </div>
+            <h3 class="font-bold text-gray-900 dark:text-white text-base mt-1">{{ cake.flavor }} ({{ cake.weight_lbs }} lbs)</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400">
+              Customer: <strong>{{ cake.order.customer.name|default:"Walk-in Customer" }}</strong> ({{ cake.order.customer.phone|default:"-" }})
+            </p>
+            {% if cake.cake_message %}
+            <p class="text-xs italic text-amber-600 dark:text-amber-400">"{{ cake.cake_message }}"</p>
+            {% endif %}
+          </div>
+          <div class="text-right flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
+            <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold
+              {% if cake.order.status == 'completed' %}bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300
+              {% elif cake.order.status == 'ready' %}bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300
+              {% elif cake.order.status == 'baking' %}bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300
+              {% else %}bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300{% endif %}">
+              {{ cake.order.get_status_display }}
+            </span>
+            <span class="font-bold text-sm text-gray-900 dark:text-white">${{ cake.order.total_amount }}</span>
+          </div>
+        </div>
+        {% empty %}
+        <div class="py-12 text-center text-sm text-gray-400">
+          No upcoming celebration cakes scheduled on the calendar.
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Quick Info & Instructions -->
+    <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 p-6 space-y-4">
+      <h3 class="font-bold text-gray-900 dark:text-white border-b border-gray-100 pb-3 dark:border-gray-800">
+        Baking Schedule Guidelines
+      </h3>
+      <div class="space-y-3 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+        <div class="rounded-lg bg-amber-50 p-3 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
+          <strong>Baking Lead Time:</strong> Multi-tiered custom celebration cakes must be sent to the kitchen at least 24 hours prior to delivery.
+        </div>
+        <div class="rounded-lg bg-blue-50 p-3 text-blue-800 dark:bg-blue-950/50 dark:text-blue-300">
+          <strong>Quality Inspection:</strong> Check fondant smoothness, inscription spelling, and refrigeration temperature before packaging in delivery boxes.
+        </div>
+        <div class="rounded-lg bg-emerald-50 p-3 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300">
+          <strong>Payment Settlement:</strong> Ensure any remaining due balance is settled during counter pickup or upon courier handover.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
