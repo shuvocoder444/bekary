@@ -121,9 +121,9 @@
               <p class="text-xs text-gray-400">{{ cake.delivery_time|default:"Anytime" }}</p>
             </td>
             <td class="px-5 py-4">
-              <p class="font-bold text-gray-900 dark:text-white">${{ cake.order.total_amount }}</p>
+              <p class="font-bold text-gray-900 dark:text-white">৳{{ cake.order.total_amount }}</p>
               {% if cake.order.due_amount > 0 %}
-              <p class="text-xs font-semibold text-rose-500">Due: ${{ cake.order.due_amount }}</p>
+              <p class="text-xs font-semibold text-rose-500">Due: ৳{{ cake.order.due_amount }}</p>
               {% else %}
               <p class="text-xs font-semibold text-emerald-500">Paid in full</p>
               {% endif %}
@@ -224,11 +224,11 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-gray-100 pt-4 dark:border-gray-800">
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Total Price ($) *</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Total Price (৳) *</label>
             {{ booking_form.total_amount }}
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Advance Paid ($)</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Advance Paid (৳)</label>
             {{ booking_form.paid_amount }}
           </div>
           <div>

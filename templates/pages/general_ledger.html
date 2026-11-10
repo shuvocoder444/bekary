@@ -39,18 +39,18 @@
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
     <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
       <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Total Credits (Inflow)</span>
-      <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">${{ total_credit|floatformat:2 }}</h3>
+      <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">৳{{ total_credit|floatformat:2 }}</h3>
       <p class="text-xs text-gray-400 mt-1">Accumulated cash in</p>
     </div>
     <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
       <span class="text-xs font-semibold uppercase tracking-wider text-rose-500">Total Debits (Outflow)</span>
-      <h3 class="text-2xl font-bold text-rose-600 mt-2">${{ total_debit|floatformat:2 }}</h3>
+      <h3 class="text-2xl font-bold text-rose-600 mt-2">৳{{ total_debit|floatformat:2 }}</h3>
       <p class="text-xs text-gray-400 mt-1">Accumulated cash out</p>
     </div>
     <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
       <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Current Ledger Balance</span>
       <h3 class="text-2xl font-bold {% if net_balance >= 0 %}text-gray-900 dark:text-white{% else %}text-rose-600{% endif %} mt-2">
-        ${{ net_balance|floatformat:2 }}
+        ৳{{ net_balance|floatformat:2 }}
       </h3>
       <p class="text-xs text-gray-400 mt-1">Net liquid funds position</p>
     </div>
@@ -106,13 +106,13 @@
               {{ entry.description }}
             </td>
             <td class="px-5 py-3.5 text-right font-bold text-xs text-rose-600 dark:text-rose-400">
-              {% if entry.debit > 0 %}${{ entry.debit }}{% else %}-{% endif %}
+              {% if entry.debit > 0 %}৳{{ entry.debit }}{% else %}-{% endif %}
             </td>
             <td class="px-5 py-3.5 text-right font-bold text-xs text-emerald-600 dark:text-emerald-400">
-              {% if entry.credit > 0 %}${{ entry.credit }}{% else %}-{% endif %}
+              {% if entry.credit > 0 %}৳{{ entry.credit }}{% else %}-{% endif %}
             </td>
             <td class="px-5 py-3.5 text-right font-bold text-sm {% if entry.running_balance >= 0 %}text-gray-900 dark:text-white{% else %}text-rose-600{% endif %}">
-              ${{ entry.running_balance }}
+              ৳{{ entry.running_balance }}
             </td>
           </tr>
           {% empty %}

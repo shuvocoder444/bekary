@@ -66,10 +66,10 @@ def salary_payment_create(request):
                     date=payment.payment_date,
                     reference_payroll=payment,
                     created_by=request.user,
-                    notes=f"Payslip #{payment.payslip_number}. Basic: ${payment.basic_salary}, Allowances: ${payment.allowances}, Overtime: ${payment.overtime_pay}, Deductions: ${payment.deductions}."
+                    notes=f"Payslip #{payment.payslip_number}. Basic: ৳{payment.basic_salary}, Allowances: ৳{payment.allowances}, Overtime: ৳{payment.overtime_pay}, Deductions: ৳{payment.deductions}."
                 )
 
-            messages.success(request, f'Salary payment of ${payment.net_salary} processed for {payment.employee.name}!')
+            messages.success(request, f'Salary payment of ৳{payment.net_salary} processed for {payment.employee.name}!')
             return redirect('payslip_view', payslip_number=payment.payslip_number)
         else:
             messages.error(request, 'Error processing salary payment.')

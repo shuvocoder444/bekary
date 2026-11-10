@@ -49,9 +49,6 @@
           <li>
             <a
               href="{% url 'pos_terminal' %}"
-              hx-get="{% url 'pos_terminal' %}"
-              hx-target="#main-content"
-              hx-push-url="true"
               @click="selected = 'pos_terminal'; sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'pos_terminal' ? 'menu-item-active' : 'menu-item-inactive'"

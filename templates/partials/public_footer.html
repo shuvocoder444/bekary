@@ -1,11 +1,13 @@
-<footer class="bg-white dark:bg-gray-900 py-8 text-center border-t border-gray-100 dark:border-gray-800 mt-auto">
+<footer class="border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 py-8 text-xs text-gray-500 dark:text-gray-400 mt-auto">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p class="text-gray-500 dark:text-gray-400 text-sm">
-            &copy; {% now "Y" %} {{ site_setting.site_name|default:"Dashboard" }}. All rights reserved. Built with Django, HTMX, Alpine.js & Tailwind CSS.
-        </p>
-        <div class="flex space-x-6 text-sm text-gray-500 dark:text-gray-400">
-            <a href="{% url 'home' %}" class="hover:text-brand-500 transition">Home</a>
-            <a href="{% url 'login' %}" class="hover:text-brand-500 transition">Login</a>
+        <p>&copy; {% now "Y" %} {{ site_setting.site_name|default:"BakeMaster Bakery & Confectionery" }}. All rights reserved.</p>
+        <div class="flex flex-wrap items-center gap-6">
+            <a href="{% url 'home' %}" class="hover:text-amber-600 transition">Home</a>
+            <a href="{% url 'pos_terminal' %}" class="hover:text-amber-600 transition">POS Terminal</a>
+            <a href="{% url 'custom_cakes_list' %}" class="hover:text-amber-600 transition">Custom Cakes</a>
+            <a href="{% url 'login' %}" class="hover:text-amber-600 transition">Staff Sign In</a>
+            <a href="{% url 'register' %}" class="hover:text-amber-600 transition">Register</a>
+            <a href="/admin/" target="_blank" class="hover:text-amber-600 transition">Admin Portal</a>
         </div>
     </div>
 </footer>

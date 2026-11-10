@@ -67,6 +67,13 @@
     <!-- Global HTMX Resilience & Event Handlers -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Re-initialize Alpine.js on HTMX swapped content
+            document.body.addEventListener('htmx:afterSwap', function (evt) {
+                if (window.Alpine && evt.detail && evt.detail.target) {
+                    window.Alpine.initTree(evt.detail.target);
+                }
+            });
+
             // Automatic CSRF injection for all HTMX requests
             document.body.addEventListener('htmx:configRequest', function (evt) {
                 function getCookie(name) {

@@ -113,7 +113,7 @@ def pos_checkout(request):
             notes=f"Walk-in POS checkout with {len(order_items)} items."
         )
 
-        messages.success(request, f"Order {order.order_number} completed successfully! Total: ${order.total_amount}")
+        messages.success(request, f"Order {order.order_number} completed successfully! Total: ৳{order.total_amount}")
         return redirect('order_receipt', order_number=order.order_number)
 
     except Exception as e:

@@ -46,7 +46,7 @@ def transaction_create(request):
             txn = form.save(commit=False)
             txn.created_by = request.user
             txn.save()
-            messages.success(request, f"{txn.get_transaction_type_display()} of ${txn.amount} recorded successfully!")
+            messages.success(request, f"{txn.get_transaction_type_display()} of ৳{txn.amount} recorded successfully!")
         else:
             messages.error(request, 'Error recording transaction. Please check the inputs.')
     return redirect('transactions_list')

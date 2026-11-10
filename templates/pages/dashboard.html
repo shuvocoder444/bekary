@@ -66,7 +66,7 @@
         </div>
       </div>
       <div class="mt-4 flex items-baseline justify-between">
-        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">${{ today_sales|floatformat:2 }}</h3>
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">৳{{ today_sales|floatformat:2 }}</h3>
         <span class="text-xs font-medium text-amber-600 dark:text-amber-400">{{ today_orders_count }} orders</span>
       </div>
       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Total Counter & Custom sales</p>
@@ -83,7 +83,7 @@
         </div>
       </div>
       <div class="mt-4 flex items-baseline justify-between">
-        <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">${{ today_income|floatformat:2 }}</h3>
+        <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">৳{{ today_income|floatformat:2 }}</h3>
         <span class="text-xs font-medium text-emerald-600 dark:text-emerald-400">Revenue Received</span>
       </div>
       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Actual collections today</p>
@@ -100,7 +100,7 @@
         </div>
       </div>
       <div class="mt-4 flex items-baseline justify-between">
-        <h3 class="text-2xl font-bold text-rose-600 dark:text-rose-400">${{ today_expenses|floatformat:2 }}</h3>
+        <h3 class="text-2xl font-bold text-rose-600 dark:text-rose-400">৳{{ today_expenses|floatformat:2 }}</h3>
         <span class="text-xs font-medium text-rose-600 dark:text-rose-400">Paid Out</span>
       </div>
       <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Ingredients, utilities, bills</p>
@@ -118,7 +118,7 @@
       </div>
       <div class="mt-4 flex items-baseline justify-between">
         <h3 class="text-2xl font-bold {% if today_net_profit >= 0 %}text-gray-900 dark:text-white{% else %}text-rose-600{% endif %}">
-          ${{ today_net_profit|floatformat:2 }}
+          ৳{{ today_net_profit|floatformat:2 }}
         </h3>
         <span class="text-xs font-medium {% if today_net_profit >= 0 %}text-emerald-500{% else %}text-rose-500{% endif %}">
           {% if today_net_profit >= 0 %}Positive{% else %}Deficit{% endif %}
@@ -171,7 +171,7 @@
               {% else %}bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300{% endif %}">
               {{ cake.order.get_status_display }}
             </span>
-            <p class="mt-1 text-xs font-bold text-gray-900 dark:text-white">${{ cake.order.total_amount }}</p>
+            <p class="mt-1 text-xs font-bold text-gray-900 dark:text-white">৳{{ cake.order.total_amount }}</p>
           </div>
         </div>
         {% empty %}
@@ -272,7 +272,7 @@
               {{ ord.get_payment_method_display }}
             </td>
             <td class="px-5 py-4 font-bold text-gray-900 dark:text-white">
-              ${{ ord.total_amount }}
+              ৳{{ ord.total_amount }}
             </td>
             <td class="px-5 py-4">
               <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-semibold

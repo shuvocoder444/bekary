@@ -22,6 +22,34 @@ def home_view(request):
     })
 
 
+from .forms import RegistrationForm
+
+
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.role = 'sr'  # default staff role
+            user.save()
+            login(request, user)
+            messages.success(request, "Account created successfully! Welcome to BakeMaster Bakery.")
+            if getattr(request, 'htmx', False):
+                return htmx_redirect(reverse('dashboard'))
+            return redirect('dashboard')
+        else:
+            if getattr(request, 'htmx', False):
+                return render(request, 'accounts/partials/register_form.html', {'form': form})
+            return render(request, 'accounts/register.html', {'form': form})
+
+    form = RegistrationForm()
+    return render(request, 'accounts/register.html', {'form': form})
+
+
 def custom_login_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')

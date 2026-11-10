@@ -46,12 +46,12 @@
     </div>
     <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
       <span class="text-xs font-semibold uppercase tracking-wider text-amber-600">Monthly Payroll Budget</span>
-      <h3 class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2">${{ monthly_payroll_budget|floatformat:2 }}</h3>
+      <h3 class="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-2">৳{{ monthly_payroll_budget|floatformat:2 }}</h3>
       <p class="text-xs text-gray-400 mt-1">Fixed monthly base salaries</p>
     </div>
     <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
       <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Total Disbursed</span>
-      <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">${{ total_disbursed|floatformat:2 }}</h3>
+      <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">৳{{ total_disbursed|floatformat:2 }}</h3>
       <p class="text-xs text-gray-400 mt-1">Processed salary payments</p>
     </div>
   </div>
@@ -95,7 +95,7 @@
               <p class="text-gray-400">{{ emp.email|default:"No email" }}</p>
             </td>
             <td class="px-5 py-4 font-bold text-gray-900 dark:text-white">
-              ${{ emp.basic_salary }}
+              ৳{{ emp.basic_salary }}
             </td>
             <td class="px-5 py-4 text-xs text-gray-400">
               {{ emp.joining_date }}
@@ -151,16 +151,16 @@
               {{ pay.month_year }}
             </td>
             <td class="px-5 py-4 text-xs">
-              ${{ pay.basic_salary }}
+              ৳{{ pay.basic_salary }}
             </td>
             <td class="px-5 py-4 text-xs text-emerald-600 dark:text-emerald-400">
-              +${{ pay.allowances|add:pay.overtime_pay }}
+              +৳{{ pay.allowances|add:pay.overtime_pay }}
             </td>
             <td class="px-5 py-4 text-xs text-rose-500">
-              -${{ pay.deductions }}
+              -৳{{ pay.deductions }}
             </td>
             <td class="px-5 py-4 font-bold text-base text-gray-900 dark:text-white">
-              ${{ pay.net_salary }}
+              ৳{{ pay.net_salary }}
             </td>
             <td class="px-5 py-4 text-xs text-gray-400">
               {{ pay.payment_date }}
@@ -220,7 +220,7 @@
             {{ emp_form.designation }}
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Basic Monthly Salary ($) *</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Basic Monthly Salary (৳) *</label>
             {{ emp_form.basic_salary }}
           </div>
         </div>
@@ -290,13 +290,13 @@
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Basic Salary ($) *</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Basic Salary (৳) *</label>
             <div @input="basic = $event.target.value">
               {{ pay_form.basic_salary }}
             </div>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Allowances ($)</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Allowances (৳)</label>
             <div @input="allowance = $event.target.value">
               {{ pay_form.allowances }}
             </div>
@@ -305,13 +305,13 @@
 
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Overtime Pay ($)</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Overtime Pay (৳)</label>
             <div @input="overtime = $event.target.value">
               {{ pay_form.overtime_pay }}
             </div>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Deductions ($)</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Deductions (৳)</label>
             <div @input="deduction = $event.target.value">
               {{ pay_form.deductions }}
             </div>
@@ -325,7 +325,7 @@
             <span class="text-[11px] text-emerald-600 dark:text-emerald-400">Basic + Allowances + Overtime - Deductions</span>
           </div>
           <span class="text-lg font-bold text-emerald-700 dark:text-emerald-300 font-mono">
-            $<span x-text="calcNet().toFixed(2)">0.00</span>
+            ৳<span x-text="calcNet().toFixed(2)">0.00</span>
           </span>
         </div>
 

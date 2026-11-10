@@ -28,9 +28,15 @@
   <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900 font-mono text-sm text-gray-800 dark:text-gray-200" id="receipt-area">
     <!-- Header -->
     <div class="text-center border-b border-dashed border-gray-300 pb-4 dark:border-gray-700">
+      {% if site_setting and site_setting.site_logo %}
+        <img class="dark:hidden h-12 w-auto max-w-[180px] mx-auto mb-2 object-contain print:block" src="{{ site_setting.site_logo.url }}" alt="{{ site_setting.site_name|default:'Logo' }}" />
+        {% if site_setting.site_logo_dark %}
+          <img class="hidden dark:block h-12 w-auto max-w-[180px] mx-auto mb-2 object-contain print:hidden" src="{{ site_setting.site_logo_dark.url }}" alt="{{ site_setting.site_name|default:'Logo' }}" />
+        {% endif %}
+      {% endif %}
       <h2 class="text-xl font-bold font-sans text-gray-900 dark:text-white">{{ site_setting.site_name|default:"BakeMaster Bakery & Confectionery" }}</h2>
       <p class="text-xs text-gray-500 mt-1">Fresh Artisan Breads, Cakes &amp; Pastries</p>
-      <p class="text-xs text-gray-500">{{ site_setting.contact_phone|default:"+1 (800) 555-BAKE" }} | {{ site_setting.contact_email|default:"support@bakemaster.com" }}</p>
+      <p class="text-xs text-gray-500">{{ site_setting.contact_phone|default:"+880 1700-000000" }} | {{ site_setting.contact_email|default:"support@bakemaster.com" }}</p>
     </div>
 
     <!-- Invoice Details -->
@@ -69,8 +75,8 @@
           <tr>
             <td class="py-2 pr-2 font-medium">{{ item.product.name }}</td>
             <td class="py-2 text-center">{{ item.quantity }}</td>
-            <td class="py-2 text-right">${{ item.unit_price }}</td>
-            <td class="py-2 text-right font-bold">${{ item.total_price }}</td>
+            <td class="py-2 text-right">৳{{ item.unit_price }}</td>
+            <td class="py-2 text-right font-bold">৳{{ item.total_price }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -81,17 +87,17 @@
     <div class="border-t border-dashed border-gray-300 pt-3 space-y-1.5 text-xs dark:border-gray-700">
       <div class="flex justify-between">
         <span class="text-gray-500">Subtotal:</span>
-        <span>${{ order.subtotal }}</span>
+        <span>৳{{ order.subtotal }}</span>
       </div>
       {% if order.discount > 0 %}
       <div class="flex justify-between text-rose-500">
         <span>Discount:</span>
-        <span>-${{ order.discount }}</span>
+        <span>-৳{{ order.discount }}</span>
       </div>
       {% endif %}
       <div class="flex justify-between border-t border-gray-200 pt-2 text-sm font-bold text-gray-900 dark:border-gray-700 dark:text-white">
         <span>TOTAL PAID:</span>
-        <span class="text-base text-amber-600 dark:text-amber-400">${{ order.total_amount }}</span>
+        <span class="text-base text-amber-600 dark:text-amber-400">৳{{ order.total_amount }}</span>
       </div>
     </div>
 
@@ -104,23 +110,48 @@
 </div>
 
 <style>
+@page {
+  size: 80mm auto;
+  margin: 5mm;
+}
+
 @media print {
+  /* Ensure page and body take full width and avoid margins that push receipt off-screen */
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  
+  /* Strictly hide everything outside #receipt-area */
+  aside, header, nav, #sidebar, .no-print, [hx-boost], .sidebar {
+    display: none !important;
+  }
+
   body * {
     visibility: hidden;
   }
+
   #receipt-area, #receipt-area * {
-    visibility: visible;
+    visibility: visible !important;
   }
+
   #receipt-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    border: none;
-    box-shadow: none;
-  }
-  .no-print {
-    display: none !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
   }
 }
 </style>

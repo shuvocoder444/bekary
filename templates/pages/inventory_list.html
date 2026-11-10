@@ -51,7 +51,7 @@
     </div>
     <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
       <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600">Total Stock Value</span>
-      <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">${{ total_value|floatformat:2 }}</h3>
+      <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">৳{{ total_value|floatformat:2 }}</h3>
       <p class="text-xs text-gray-400 mt-1">Current assets in raw materials</p>
     </div>
   </div>
@@ -93,10 +93,10 @@
               {{ m.min_stock_alert }}
             </td>
             <td class="px-5 py-4 font-mono text-xs">
-              ${{ m.unit_cost }}
+              ৳{{ m.unit_cost }}
             </td>
             <td class="px-5 py-4 font-bold text-emerald-600 dark:text-emerald-400">
-              ${{ m.total_stock_value }}
+              ৳{{ m.total_stock_value }}
             </td>
             <td class="px-5 py-4 text-xs text-gray-500 dark:text-gray-400">
               {{ m.supplier_name|default:"General Supplier" }}
@@ -159,7 +159,7 @@
               {{ move.quantity }} {{ move.material.unit }}
             </td>
             <td class="px-5 py-3.5 font-mono text-xs">
-              ${{ move.total_cost }}
+              ৳{{ move.total_cost }}
             </td>
             <td class="px-5 py-3.5 text-xs text-gray-400">
               {{ move.note|default:"-" }}
@@ -197,7 +197,7 @@
             {{ material_form.unit }}
           </div>
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Cost per Unit ($)</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Cost per Unit (৳)</label>
             {{ material_form.unit_cost }}
           </div>
         </div>
@@ -254,7 +254,7 @@
         </div>
         <div class="grid grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Unit Cost ($)</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Unit Cost (৳)</label>
             {{ movement_form.unit_cost }}
           </div>
           <div>

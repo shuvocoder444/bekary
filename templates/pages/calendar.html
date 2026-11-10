@@ -61,7 +61,7 @@
               {% else %}bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300{% endif %}">
               {{ cake.order.get_status_display }}
             </span>
-            <span class="font-bold text-sm text-gray-900 dark:text-white">${{ cake.order.total_amount }}</span>
+            <span class="font-bold text-sm text-gray-900 dark:text-white">৳{{ cake.order.total_amount }}</span>
           </div>
         </div>
         {% empty %}

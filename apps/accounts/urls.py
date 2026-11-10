@@ -14,5 +14,6 @@ urlpatterns = [
     path('dashboard/charts/', views.charts_view, name='charts'),
     path('dashboard/ui-elements/', views.ui_elements_view, name='ui_elements'),
     path('login/', views.custom_login_view, name='login'),
+    path('register/', views.register_view, name='register'),
     path('logout/', views.logout_view, name='logout'),
 ]

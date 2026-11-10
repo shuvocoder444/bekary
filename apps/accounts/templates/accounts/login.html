@@ -1,46 +1,50 @@
-{% load tailwind_cli %}
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ site_setting.site_name|default:"BakeMaster Bakery ERP" }} - Sign In</title>
-    
-    <!-- Favicon -->
-    {% if site_setting.favicon %}
-        <link rel="icon" href="{{ site_setting.favicon.url }}">
-    {% else %}
-        <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
-    {% endif %}
+{% extends 'base_public.html' %}
 
-    {% tailwind_css %}
-    
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
-    <style>
-        .htmx-request .htmx-indicator { display: inline-block !important; }
-        .htmx-request .submit-text { opacity: 0; }
-    </style>
-</head>
-<body class="bg-gray-50 dark:bg-gray-950 flex items-center justify-center min-h-screen font-sans p-4">
-    
-    <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-800">
-        <div class="text-center mb-8">
-            <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 mb-3">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                </svg>
-            </div>
-            <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">{{ site_setting.site_name|default:"BakeMaster ERP" }}</h2>
-            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">Artisan Bakery &amp; POS Management System</p>
+{% block title %}{{ site_setting.site_name|default:"BakeMaster Bakery" }} - Sign In{% endblock %}
+
+{% block extra_head %}
+<style>
+    .htmx-request .htmx-indicator { display: inline-block !important; }
+    .htmx-request .submit-text { opacity: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flex-1 flex items-center justify-center p-4 py-12">
+    <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-xl p-8 border border-gray-100 dark:border-gray-800">
+        <div class="text-center mb-6">
+            <a href="{% url 'home' %}" class="inline-block mb-3">
+                {% if site_setting and site_setting.site_logo %}
+                    <img class="dark:hidden h-12 w-auto max-w-[200px] mx-auto object-contain" src="{{ site_setting.site_logo.url }}" alt="{{ site_setting.site_name|default:'Logo' }}" />
+                    {% if site_setting.site_logo_dark %}
+                        <img class="hidden dark:block h-12 w-auto max-w-[200px] mx-auto object-contain" src="{{ site_setting.site_logo_dark.url }}" alt="{{ site_setting.site_name|default:'Logo' }}" />
+                    {% else %}
+                        <img class="hidden dark:block h-12 w-auto max-w-[200px] mx-auto object-contain" src="{{ site_setting.site_logo.url }}" alt="{{ site_setting.site_name|default:'Logo' }}" />
+                    {% endif %}
+                {% elif site_setting and site_setting.site_icon %}
+                    <img class="h-12 w-auto max-w-[200px] mx-auto object-contain" src="{{ site_setting.site_icon.url }}" alt="{{ site_setting.site_name|default:'Site Icon' }}" />
+                {% else %}
+                    <div class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                    </div>
+                {% endif %}
+            </a>
+            <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">Staff &amp; User Sign In</h2>
+            <p class="text-gray-500 dark:text-gray-400 text-xs mt-1">Access the bakery POS &amp; management dashboard</p>
         </div>
 
         <div id="login-form-container">
             {% include 'accounts/partials/login_form.html' %}
         </div>
-    </div>
 
-</body>
-</html>
+        <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 text-center">
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+                Don't have an account yet? 
+                <a href="{% url 'register' %}" class="font-bold text-amber-600 hover:text-amber-700">Register here</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -5,7 +5,7 @@ from django.db import models
 class UserManager(BaseUserManager):
     def create_user(self, email=None, phone_number=None, password=None, **extra_fields):
         if not email and not phone_number:
-            raise ValueError('User er obossoi ekta email address othoba phone number thakte hobe.')
+            raise ValueError('User must have an email address or a phone number.')
         
         if email:
             email = self.normalize_email(email)
@@ -19,12 +19,12 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('role', 'admin') # Superuser default bhabe admin hobe
+        extra_fields.setdefault('role', 'admin')
 
         if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser-er obossoi is_staff=True thakte hobe.')
+            raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser-er obossoi is_superuser=True thakte hobe.')
+            raise ValueError('Superuser must have is_superuser=True.')
 
         return self.create_user(email, phone_number, password, **extra_fields)
 

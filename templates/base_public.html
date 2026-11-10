@@ -1,0 +1,46 @@
+{% load tailwind_cli %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" x-data="{ darkMode: JSON.parse(localStorage.getItem('darkMode')) || false }" :class="{'dark': darkMode === true}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site_setting.site_name|default:"BakeMaster Bakery & Confectionery" }}{% endblock %}</title>
+    
+    <!-- Favicon -->
+    {% if site_setting.favicon %}
+        <link rel="icon" href="{{ site_setting.favicon.url }}">
+    {% else %}
+        <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    {% endif %}
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    {% tailwind_css %}
+
+    <script>
+        if (localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 font-sans antialiased flex flex-col min-h-screen">
+
+    <!-- Unified Public Header Navbar -->
+    {% include 'partials/public_navbar.html' %}
+
+    <!-- Main Content Area -->
+    <main class="flex-grow flex flex-col">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Unified Public Footer -->
+    {% include 'partials/public_footer.html' %}
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

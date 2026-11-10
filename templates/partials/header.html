@@ -65,15 +65,15 @@
         </svg>
       </button>
       <a id="header-logo" href="{% url 'dashboard' %}" class="lg:hidden" hx-target="#main-content">
-        {% if site_setting and site_setting.site_icon %}
-          <img class="h-8 w-auto max-w-[130px] object-contain" src="{{ site_setting.site_icon.url }}" alt="{{ site_setting.site_name|default:'Site Icon' }}" />
-        {% elif site_setting and site_setting.site_logo %}
+        {% if site_setting and site_setting.site_logo %}
           <img class="dark:hidden h-8 w-auto max-w-[130px] object-contain" src="{{ site_setting.site_logo.url }}" alt="{{ site_setting.site_name|default:'Logo' }}" />
           {% if site_setting.site_logo_dark %}
             <img class="hidden dark:block h-8 w-auto max-w-[130px] object-contain" src="{{ site_setting.site_logo_dark.url }}" alt="{{ site_setting.site_name|default:'Logo' }}" />
           {% else %}
             <img class="hidden dark:block h-8 w-auto max-w-[130px] object-contain" src="{{ site_setting.site_logo.url }}" alt="{{ site_setting.site_name|default:'Logo' }}" />
           {% endif %}
+        {% elif site_setting and site_setting.site_icon %}
+          <img class="h-8 w-auto max-w-[130px] object-contain" src="{{ site_setting.site_icon.url }}" alt="{{ site_setting.site_name|default:'Site Icon' }}" />
         {% else %}
           <img class="dark:hidden h-8 w-auto max-w-[130px] object-contain" src="{% static 'images/logo/logo.png' %}" alt="Logo" />
           <img class="hidden dark:block h-8 w-auto max-w-[130px] object-contain" src="{% static 'images/logo/logo-dark.png' %}" alt="Logo" />

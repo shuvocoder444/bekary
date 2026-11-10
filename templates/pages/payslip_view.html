@@ -82,30 +82,30 @@
           <tr>
             <td class="py-3 font-medium text-gray-900 dark:text-white">Basic Fixed Monthly Salary</td>
             <td class="py-3 text-right text-gray-500">Earning</td>
-            <td class="py-3 text-right font-semibold text-gray-900 dark:text-white">${{ payment.basic_salary }}</td>
+            <td class="py-3 text-right font-semibold text-gray-900 dark:text-white">৳{{ payment.basic_salary }}</td>
           </tr>
           <tr>
             <td class="py-3 font-medium text-gray-900 dark:text-white">Allowances &amp; Incentives</td>
             <td class="py-3 text-right text-gray-500">Earning</td>
-            <td class="py-3 text-right font-semibold text-emerald-600 dark:text-emerald-400">+${{ payment.allowances }}</td>
+            <td class="py-3 text-right font-semibold text-emerald-600 dark:text-emerald-400">+৳{{ payment.allowances }}</td>
           </tr>
           <tr>
             <td class="py-3 font-medium text-gray-900 dark:text-white">Overtime &amp; Special Duty Baking</td>
             <td class="py-3 text-right text-gray-500">Earning</td>
-            <td class="py-3 text-right font-semibold text-emerald-600 dark:text-emerald-400">+${{ payment.overtime_pay }}</td>
+            <td class="py-3 text-right font-semibold text-emerald-600 dark:text-emerald-400">+৳{{ payment.overtime_pay }}</td>
           </tr>
           {% if payment.deductions > 0 %}
           <tr>
             <td class="py-3 font-medium text-rose-600">Deductions / Advance Adjustments</td>
             <td class="py-3 text-right text-gray-500">Deduction</td>
-            <td class="py-3 text-right font-semibold text-rose-600">-${{ payment.deductions }}</td>
+            <td class="py-3 text-right font-semibold text-rose-600">-৳{{ payment.deductions }}</td>
           </tr>
           {% endif %}
         </tbody>
         <tfoot class="border-t-2 border-gray-900 dark:border-gray-100">
           <tr>
             <th colspan="2" class="py-4 text-sm font-bold uppercase text-gray-900 dark:text-white">NET SALARY DISBURSED</th>
-            <th class="py-4 text-right text-xl font-bold text-amber-600 dark:text-amber-400">${{ payment.net_salary }}</th>
+            <th class="py-4 text-right text-xl font-bold text-amber-600 dark:text-amber-400">৳{{ payment.net_salary }}</th>
           </tr>
         </tfoot>
       </table>
