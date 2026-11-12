@@ -162,4 +162,31 @@ def ui_elements_view(request):
 def logout_view(request):
     logout(request)
     messages.success(request, "You have been logged out successfully.")
+    if getattr(request, 'htmx', False):
+        from config.htmx_utils import htmx_redirect
+        return htmx_redirect(reverse('login'))
     return redirect('login')
+
+
+def switch_language_view(request):
+    """
+    Switches active language between English ('en') and Bangla ('bn').
+    Stores preference in both session and persistent cookie, then redirects back.
+    """
+    lang = request.GET.get('lang') or request.POST.get('lang') or 'en'
+    if lang not in ['en', 'bn']:
+        lang = 'en'
+
+    request.session['django_language'] = lang
+    next_url = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or '/'
+
+    if getattr(request, 'htmx', False):
+        from config.htmx_utils import htmx_redirect
+        response = htmx_redirect(next_url)
+    else:
+        response = redirect(next_url)
+
+    # Set cookie for 1 year so choice is remembered across browser sessions
+    response.set_cookie('django_language', lang, max_age=365*24*60*60, samesite='Lax')
+    return response
+

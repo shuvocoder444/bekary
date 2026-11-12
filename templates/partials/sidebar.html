@@ -3,7 +3,7 @@
   id="sidebar"
   :class="sidebarToggle ? 'translate-x-0 lg:w-[90px]' : '-translate-x-full'"
   class="sidebar fixed left-0 top-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-hidden border-r border-gray-200 bg-white px-5 duration-300 ease-linear dark:border-gray-800 dark:bg-black lg:static lg:translate-x-0"
-  @click.outside="sidebarToggle = false"
+  @click.outside="if (window.innerWidth < 1024) sidebarToggle = false"
 >
   <div
     :class="sidebarToggle ? 'justify-center' : 'justify-between'"
@@ -34,7 +34,7 @@
               hx-get="{% url 'dashboard' %}"
               hx-target="#main-content"
               hx-push-url="true"
-              @click="selected = 'dashboard'; sidebarToggle = false"
+              @click="selected = 'dashboard'; if (window.innerWidth < 1024) sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'dashboard' ? 'menu-item-active' : 'menu-item-inactive'"
             >
@@ -49,7 +49,10 @@
           <li>
             <a
               href="{% url 'pos_terminal' %}"
-              @click="selected = 'pos_terminal'; sidebarToggle = false"
+              hx-get="{% url 'pos_terminal' %}"
+              hx-target="#main-content"
+              hx-push-url="true"
+              @click="selected = 'pos_terminal'; if (window.innerWidth < 1024) sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'pos_terminal' ? 'menu-item-active' : 'menu-item-inactive'"
             >
@@ -67,7 +70,7 @@
               hx-get="{% url 'custom_cakes_list' %}"
               hx-target="#main-content"
               hx-push-url="true"
-              @click="selected = 'custom_cakes_list'; sidebarToggle = false"
+              @click="selected = 'custom_cakes_list'; if (window.innerWidth < 1024) sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'custom_cakes_list' ? 'menu-item-active' : 'menu-item-inactive'"
             >
@@ -76,6 +79,150 @@
               </svg>
               <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Custom Cakes</span>
             </a>
+          </li>
+
+          <!-- Production Accordion Submenu -->
+          <li x-data="{ open: ['production_batches_list', 'production_batch_create', 'production_reports'].includes(selected) }">
+            <a
+              href="#"
+              @click.prevent="open = !open"
+              class="menu-item group flex items-center justify-between"
+              :class="['production_batches_list', 'production_batch_create', 'production_reports'].includes(selected) ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <div class="flex items-center gap-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Production</span>
+              </div>
+              <svg
+                class="w-4 h-4 transition-transform duration-200"
+                :class="[open ? 'rotate-180' : '', sidebarToggle ? 'lg:hidden' : '']"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </a>
+
+            <!-- Production Submenu -->
+            <ul x-show="open" :class="sidebarToggle ? 'lg:hidden' : ''" class="mt-1 space-y-1 pl-9 pr-1">
+              <li>
+                <a
+                  href="{% url 'production_batch_create' %}"
+                  hx-get="{% url 'production_batch_create' %}"
+                  hx-target="#main-content"
+                  hx-push-url="true"
+                  @click="selected = 'production_batch_create'; if (window.innerWidth < 1024) sidebarToggle = false"
+                  class="flex items-center gap-2 rounded-lg py-1.5 px-3 text-xs font-semibold transition"
+                  :class="selected === 'production_batch_create' ? 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-400 font-bold' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'"
+                >
+                  <span class="text-amber-500 font-bold">+</span>
+                  <span>New Production Batch</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{% url 'production_batches_list' %}"
+                  hx-get="{% url 'production_batches_list' %}"
+                  hx-target="#main-content"
+                  hx-push-url="true"
+                  @click="selected = 'production_batches_list'; if (window.innerWidth < 1024) sidebarToggle = false"
+                  class="flex items-center gap-2 rounded-lg py-1.5 px-3 text-xs font-semibold transition"
+                  :class="selected === 'production_batches_list' ? 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-400 font-bold' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'"
+                >
+                  <span>&bull;</span>
+                  <span>All Batches List</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{% url 'production_reports' %}"
+                  hx-get="{% url 'production_reports' %}"
+                  hx-target="#main-content"
+                  hx-push-url="true"
+                  @click="selected = 'production_reports'; if (window.innerWidth < 1024) sidebarToggle = false"
+                  class="flex items-center gap-2 rounded-lg py-1.5 px-3 text-xs font-semibold transition"
+                  :class="selected === 'production_reports' ? 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-400 font-bold' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'"
+                >
+                  <span>&bull;</span>
+                  <span>Production Reports</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <!-- Hawker Delivery Accordion Submenu -->
+          <li x-data="{ open: ['hawker_distribution_list', 'hawker_dispatch_create', 'hawker_sales_report'].includes(selected) }">
+            <a
+              href="#"
+              @click.prevent="open = !open"
+              class="menu-item group flex items-center justify-between"
+              :class="['hawker_distribution_list', 'hawker_dispatch_create', 'hawker_sales_report'].includes(selected) ? 'menu-item-active' : 'menu-item-inactive'"
+            >
+              <div class="flex items-center gap-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                </svg>
+                <span class="menu-item-text" :class="sidebarToggle ? 'lg:hidden' : ''">Hawker Delivery</span>
+              </div>
+              <svg
+                class="w-4 h-4 transition-transform duration-200"
+                :class="[open ? 'rotate-180' : '', sidebarToggle ? 'lg:hidden' : '']"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </a>
+
+            <!-- Hawker Submenu -->
+            <ul x-show="open" :class="sidebarToggle ? 'lg:hidden' : ''" class="mt-1 space-y-1 pl-9 pr-1">
+              <li>
+                <a
+                  href="{% url 'hawker_dispatch_create' %}"
+                  hx-get="{% url 'hawker_dispatch_create' %}"
+                  hx-target="#main-content"
+                  hx-push-url="true"
+                  @click="selected = 'hawker_dispatch_create'; if (window.innerWidth < 1024) sidebarToggle = false"
+                  class="flex items-center gap-2 rounded-lg py-1.5 px-3 text-xs font-semibold transition"
+                  :class="selected === 'hawker_dispatch_create' ? 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-400 font-bold' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'"
+                >
+                  <span class="text-amber-500 font-bold">+</span>
+                  <span>New Delivery Challan</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{% url 'hawker_distribution_list' %}"
+                  hx-get="{% url 'hawker_distribution_list' %}"
+                  hx-target="#main-content"
+                  hx-push-url="true"
+                  @click="selected = 'hawker_distribution_list'; if (window.innerWidth < 1024) sidebarToggle = false"
+                  class="flex items-center gap-2 rounded-lg py-1.5 px-3 text-xs font-semibold transition"
+                  :class="selected === 'hawker_distribution_list' ? 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-400 font-bold' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'"
+                >
+                  <span>&bull;</span>
+                  <span>Challans List</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{% url 'hawker_sales_report' %}"
+                  hx-get="{% url 'hawker_sales_report' %}"
+                  hx-target="#main-content"
+                  hx-push-url="true"
+                  @click="selected = 'hawker_sales_report'; if (window.innerWidth < 1024) sidebarToggle = false"
+                  class="flex items-center gap-2 rounded-lg py-1.5 px-3 text-xs font-semibold transition"
+                  :class="selected === 'hawker_sales_report' ? 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-400 font-bold' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'"
+                >
+                  <span>&bull;</span>
+                  <span>Hawker Due Reports</span>
+                </a>
+              </li>
+            </ul>
           </li>
         </ul>
       </div>
@@ -96,7 +243,7 @@
               hx-get="{% url 'products_list' %}"
               hx-target="#main-content"
               hx-push-url="true"
-              @click="selected = 'products_list'; sidebarToggle = false"
+              @click="selected = 'products_list'; if (window.innerWidth < 1024) sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'products_list' ? 'menu-item-active' : 'menu-item-inactive'"
             >
@@ -114,7 +261,7 @@
               hx-get="{% url 'inventory_list' %}"
               hx-target="#main-content"
               hx-push-url="true"
-              @click="selected = 'inventory_list'; sidebarToggle = false"
+              @click="selected = 'inventory_list'; if (window.innerWidth < 1024) sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'inventory_list' ? 'menu-item-active' : 'menu-item-inactive'"
             >
@@ -143,7 +290,7 @@
               hx-get="{% url 'transactions_list' %}"
               hx-target="#main-content"
               hx-push-url="true"
-              @click="selected = 'transactions_list'; sidebarToggle = false"
+              @click="selected = 'transactions_list'; if (window.innerWidth < 1024) sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'transactions_list' ? 'menu-item-active' : 'menu-item-inactive'"
             >
@@ -161,7 +308,7 @@
               hx-get="{% url 'general_ledger' %}"
               hx-target="#main-content"
               hx-push-url="true"
-              @click="selected = 'general_ledger'; sidebarToggle = false"
+              @click="selected = 'general_ledger'; if (window.innerWidth < 1024) sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'general_ledger' ? 'menu-item-active' : 'menu-item-inactive'"
             >
@@ -190,7 +337,7 @@
               hx-get="{% url 'payroll_dashboard' %}"
               hx-target="#main-content"
               hx-push-url="true"
-              @click="selected = 'payroll_dashboard'; sidebarToggle = false"
+              @click="selected = 'payroll_dashboard'; if (window.innerWidth < 1024) sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'payroll_dashboard' ? 'menu-item-active' : 'menu-item-inactive'"
             >
@@ -219,7 +366,7 @@
               hx-get="{% url 'customers_list' %}"
               hx-target="#main-content"
               hx-push-url="true"
-              @click="selected = 'customers_list'; sidebarToggle = false"
+              @click="selected = 'customers_list'; if (window.innerWidth < 1024) sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'customers_list' ? 'menu-item-active' : 'menu-item-inactive'"
             >
@@ -237,7 +384,7 @@
               hx-get="{% url 'calendar' %}"
               hx-target="#main-content"
               hx-push-url="true"
-              @click="selected = 'calendar'; sidebarToggle = false"
+              @click="selected = 'calendar'; if (window.innerWidth < 1024) sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'calendar' ? 'menu-item-active' : 'menu-item-inactive'"
             >
@@ -255,7 +402,7 @@
               hx-get="{% url 'settings' %}"
               hx-target="#main-content"
               hx-push-url="true"
-              @click="selected = 'settings'; sidebarToggle = false"
+              @click="selected = 'settings'; if (window.innerWidth < 1024) sidebarToggle = false"
               class="menu-item group"
               :class="selected === 'settings' ? 'menu-item-active' : 'menu-item-inactive'"
             >

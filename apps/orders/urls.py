@@ -10,4 +10,9 @@ urlpatterns = [
     path('custom-cakes/<int:pk>/status/', views.custom_cake_status_update, name='custom_cake_status_update'),
     path('customers/', views.customers_list, name='customers_list'),
     path('customers/create/', views.customer_create, name='customer_create'),
+    
+    # Hawker & Route Distribution
+    path('hawkers/', views.hawker_distribution_list, name='hawker_distribution_list'),
+    path('hawkers/dispatch/', views.hawker_dispatch_create, name='hawker_dispatch_create'),
+    path('hawkers/reports/', views.hawker_sales_report, name='hawker_sales_report'),
 ]

@@ -8,7 +8,7 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <a href="{% url 'pos_terminal' %}" class="p-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-xs hover:border-amber-300 transition block">
+        <a href="{% url 'pos_terminal' %}" hx-get="{% url 'pos_terminal' %}" hx-target="#main-content" hx-push-url="true" class="p-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-xs hover:border-amber-300 transition block">
             <span class="text-2xl">⚡</span>
             <h3 class="font-bold text-gray-900 dark:text-white text-base mt-2">POS Billing</h3>
             <p class="text-xs text-gray-500 mt-1">High-speed counter checkout & thermal receipts</p>

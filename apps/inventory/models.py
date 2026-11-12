@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -80,3 +81,69 @@ class StockMovement(models.Model):
 
     def __str__(self):
         return f"{self.get_movement_type_display()} - {self.material.name} ({self.quantity} {self.material.unit})"
+
+
+class ProductionBatch(models.Model):
+    STATUS_CHOICES = (
+        ('completed', 'Completed & Stock Updated'),
+        ('draft', 'Draft / In Progress'),
+    )
+
+    batch_number = models.CharField(max_length=50, unique=True)
+    production_date = models.DateField(default=timezone.now)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='completed')
+    total_raw_material_cost = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    notes = models.TextField(blank=True, null=True, help_text='Shift details, special recipes, or baker notes')
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Production Batch'
+        verbose_name_plural = 'Production Batches'
+        ordering = ['-production_date', '-created_at']
+
+    def __str__(self):
+        return f"{self.batch_number} ({self.production_date})"
+
+    @property
+    def total_output_quantity(self):
+        return sum(item.quantity for item in self.outputs.all())
+
+
+class BatchConsumption(models.Model):
+    """Raw materials used in a production batch"""
+    batch = models.ForeignKey(ProductionBatch, on_delete=models.CASCADE, related_name='consumptions')
+    material = models.ForeignKey(RawMaterial, on_delete=models.CASCADE, related_name='batch_usages')
+    quantity = models.DecimalField(max_digits=10, decimal_places=2, help_text='Quantity of raw material used')
+    unit_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    class Meta:
+        verbose_name = 'Batch Consumption'
+        verbose_name_plural = 'Batch Consumptions'
+
+    def save(self, *args, **kwargs):
+        if not self.unit_cost and self.material:
+            self.unit_cost = self.material.unit_cost
+        if not self.total_cost and self.quantity and self.unit_cost:
+            self.total_cost = round(self.quantity * self.unit_cost, 2)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.material.name}: {self.quantity} {self.material.unit}"
+
+
+class BatchOutput(models.Model):
+    """Finished goods produced from a production batch"""
+    batch = models.ForeignKey(ProductionBatch, on_delete=models.CASCADE, related_name='outputs')
+    product = models.ForeignKey('products.Product', on_delete=models.CASCADE, related_name='batch_productions')
+    quantity = models.PositiveIntegerField(help_text='Number of finished pieces/units produced')
+    unit_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text='Allocated production cost per piece')
+
+    class Meta:
+        verbose_name = 'Batch Output'
+        verbose_name_plural = 'Batch Outputs'
+
+    def __str__(self):
+        return f"{self.product.name}: {self.quantity} {self.product.unit}"

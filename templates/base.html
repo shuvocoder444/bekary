@@ -1,7 +1,7 @@
 {% load tailwind_cli %}
 {% load static %}
 <!doctype html>
-<html lang="en">
+<html lang="{{ current_lang|default:'en' }}">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,8 +17,13 @@
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="{% static 'js/i18n.js' %}"></script>
     
     <script>
+        // Initialize Language Preference and Dictionary
+        window.BakeMasterI18n.setLang('{{ current_lang|default:"en" }}');
+        window.BakeMasterI18n.setDict({{ translations_json|safe }});
+
         if (localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
@@ -30,8 +35,17 @@
 </head>
 
 <body
-    x-data="{ 'loaded': true, 'darkMode': JSON.parse(localStorage.getItem('darkMode')) || false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
-    x-init="$watch('darkMode', val => { localStorage.setItem('darkMode', JSON.stringify(val)); if (val) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); })"
+    x-data="{ 
+        'loaded': true, 
+        'darkMode': JSON.parse(localStorage.getItem('darkMode')) || false, 
+        'stickyMenu': false, 
+        'sidebarToggle': JSON.parse(localStorage.getItem('sidebarToggle')) || false, 
+        'scrollTop': false 
+    }"
+    x-init="
+        $watch('darkMode', val => { localStorage.setItem('darkMode', JSON.stringify(val)); if (val) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); });
+        $watch('sidebarToggle', val => { if (window.innerWidth >= 1024) localStorage.setItem('sidebarToggle', JSON.stringify(val)); });
+    "
     :class="{'dark bg-gray-950': darkMode === true}"
     class="bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 font-sans"
     hx-boost="true"
@@ -67,12 +81,20 @@
     <!-- Global HTMX Resilience & Event Handlers -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Re-initialize Alpine.js on HTMX swapped content
+            // Re-initialize Alpine.js and apply Translation on HTMX swapped content
             document.body.addEventListener('htmx:afterSwap', function (evt) {
                 if (window.Alpine && evt.detail && evt.detail.target) {
                     window.Alpine.initTree(evt.detail.target);
                 }
+                if (window.BakeMasterI18n) {
+                    window.BakeMasterI18n.translatePage(evt.detail ? evt.detail.target : document.body);
+                }
             });
+
+            // Initial Translation on Load
+            if (window.BakeMasterI18n) {
+                window.BakeMasterI18n.translatePage(document.body);
+            }
 
             // Automatic CSRF injection for all HTMX requests
             document.body.addEventListener('htmx:configRequest', function (evt) {

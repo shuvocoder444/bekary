@@ -15,8 +15,9 @@ class CustomCakeOrderInline(StackedInline):
 
 @admin.register(Customer)
 class CustomerAdmin(ModelAdmin):
-    list_display = ['name', 'phone', 'email', 'total_orders', 'total_spent', 'created_at']
-    search_fields = ['name', 'phone', 'email']
+    list_display = ['name', 'customer_type', 'phone', 'route_area', 'running_due', 'total_orders', 'total_spent', 'created_at']
+    search_fields = ['name', 'phone', 'email', 'route_area']
+    list_filter = ['customer_type', 'created_at']
 
 
 @admin.register(Order)

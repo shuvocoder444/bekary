@@ -179,7 +179,7 @@
         </div>
 
         <!-- Cart Summary & Checkout Form -->
-        <form action="{% url 'pos_checkout' %}" method="POST" class="border-t border-gray-100 p-4 dark:border-gray-800 space-y-3">
+        <form id="checkout-form" action="{% url 'pos_checkout' %}" method="POST" hx-post="{% url 'pos_checkout' %}" hx-target="#main-content" hx-push-url="true" class="border-t border-gray-100 p-4 dark:border-gray-800 space-y-3">
           {% csrf_token %}
           <input type="hidden" name="cart_data" :value="JSON.stringify(cart)" />
           <input type="hidden" name="customer_id" :value="customerId" />
@@ -238,6 +238,7 @@
           <!-- Submit Order -->
           <button
             type="submit"
+            id="complete-sale-btn"
             :disabled="cart.length === 0"
             class="w-full rounded-lg bg-amber-600 py-3 text-sm font-bold text-white shadow-md hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
           >

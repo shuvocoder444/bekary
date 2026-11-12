@@ -26,6 +26,16 @@ environ.Env.read_env(BASE_DIR / '.env')
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-s&7h5!l0g_kmlyvvc4$_tgl2=l%%@w+b&wq14+!!_y)_y8xhar')
 DEBUG = env.bool('DEBUG', default=True)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+CSRF_TRUSTED_ORIGINS = env.list(
+    'CSRF_TRUSTED_ORIGINS',
+    default=[
+        'https://bekary.velohoster.com',
+        'http://bekary.velohoster.com',
+        'http://localhost',
+        'http://127.0.0.1',
+    ]
+)
+
 
 
 # Application definition
@@ -95,6 +105,7 @@ TEMPLATES = [
                 'apps.site_settings.context_processors.site_settings',
                 'config.context_processors.base_template',
                 'config.bakery_context_processors.bakery_notifications',
+                'config.language_context.language_context',
             ],
         },
     },

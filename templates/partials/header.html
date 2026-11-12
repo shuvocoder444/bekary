@@ -146,6 +146,55 @@
       class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 lg:flex lg:justify-end lg:px-0 lg:shadow-none"
     >
       <div class="2xsm:gap-3 flex items-center gap-2">
+        <!-- Language Switcher Toggle Dropdown -->
+        <div class="relative" x-data="{ langOpen: false }">
+          <button
+            @click="langOpen = !langOpen"
+            @click.outside="langOpen = false"
+            class="flex items-center gap-1.5 h-10 px-3 rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-700 shadow-xs hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800 transition"
+            title="Switch Language / ভাষা পরিবর্তন করুন"
+          >
+            {% if is_bangla %}
+            <span class="text-sm">🇧🇩</span>
+            <span>বাংলা</span>
+            {% else %}
+            <span class="text-sm">🇬🇧</span>
+            <span>English</span>
+            {% endif %}
+            <svg class="h-3.5 w-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <div
+            x-show="langOpen"
+            x-transition
+            x-cloak
+            class="absolute right-0 mt-2 w-36 rounded-xl border border-gray-200 bg-white p-1.5 shadow-xl dark:border-gray-800 dark:bg-gray-900 z-99999"
+          >
+            <a
+              href="{% url 'switch_language' %}?lang=en&next={{ request.get_full_path|urlencode }}"
+              class="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs font-semibold {% if is_english %}bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300{% else %}text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800{% endif %} transition"
+            >
+              <div class="flex items-center gap-2">
+                <span>🇬🇧</span>
+                <span>English</span>
+              </div>
+              {% if is_english %}<span class="text-amber-600 font-bold">&check;</span>{% endif %}
+            </a>
+            <a
+              href="{% url 'switch_language' %}?lang=bn&next={{ request.get_full_path|urlencode }}"
+              class="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs font-semibold {% if is_bangla %}bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300{% else %}text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800{% endif %} transition"
+            >
+              <div class="flex items-center gap-2">
+                <span>🇧🇩</span>
+                <span>বাংলা</span>
+              </div>
+              {% if is_bangla %}<span class="text-amber-600 font-bold">&check;</span>{% endif %}
+            </a>
+          </div>
+        </div>
+
         <button
           class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
           @click.prevent="darkMode = !darkMode"

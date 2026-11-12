@@ -1,0 +1,513 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<div class="w-full max-w-full space-y-6 p-4 sm:p-6 lg:p-8" x-data="productionBatchApp()">
+  <!-- Top Navigation & Page Title -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-gray-200 pb-5 dark:border-gray-800">
+    <div>
+      <div class="flex items-center gap-2 mb-1.5">
+        <a
+          href="{% url 'production_batches_list' %}"
+          hx-get="{% url 'production_batches_list' %}"
+          hx-target="#main-content"
+          hx-push-url="true"
+          class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400 transition"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          </svg>
+          {% if is_bangla %}সকল ব্যাচ তালিকায় ফিরুন{% else %}Back to All Batches{% endif %}
+        </a>
+      </div>
+      <h1 class="text-2xl font-black tracking-tight text-gray-900 dark:text-white sm:text-3xl flex items-center gap-3">
+        <span>🏭</span>
+        <span>{% if is_bangla %}নতুন বেকারি উৎপাদন ও রেসিপি ব্যাচ{% else %}New Bakery Production Batch{% endif %}</span>
+      </h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        {% if is_bangla %}
+        কাঁচামাল খরচ লিপিবদ্ধ করুন এবং তৈরি সমাপ্ত পণ্য গুদাম স্টকে যুক্ত করুন।
+        {% else %}
+        Record raw materials consumed and add finished baked goods to warehouse stock.
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Live Cost Counter Badges -->
+    <div class="flex items-center gap-3">
+      <div class="rounded-xl border border-rose-200 bg-rose-50/80 px-4 py-2.5 text-right dark:border-rose-900/50 dark:bg-rose-950/30">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 block">
+          {% if is_bangla %}মোট কাঁচামাল খরচ{% else %}Total Material Cost{% endif %}
+        </span>
+        <div class="text-xl font-black text-rose-700 dark:text-rose-300" x-text="'৳' + totalMaterialCost().toFixed(2)">৳0.00</div>
+      </div>
+      <div class="rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-2.5 text-right dark:border-emerald-900/50 dark:bg-emerald-950/30">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">
+          {% if is_bangla %}মোট উৎপাদিত পণ্য{% else %}Total Units Baked{% endif %}
+        </span>
+        <div class="text-xl font-black text-emerald-700 dark:text-emerald-300" x-text="totalUnitsBaked() + ' {% if is_bangla %}পিস{% else %}Pcs{% endif %}'">0 {% if is_bangla %}পিস{% else %}Pcs{% endif %}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form
+    action="{% url 'production_batch_create' %}"
+    method="POST"
+    hx-post="{% url 'production_batch_create' %}"
+    hx-target="#main-content"
+    hx-push-url="true"
+    class="space-y-6"
+  >
+    {% csrf_token %}
+
+    <!-- CARD 1: Production Batch Header (Date & Shift Notes) -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs dark:border-gray-800 dark:bg-gray-900">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-center">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+            {% if is_bangla %}উৎপাদনের তারিখ{% else %}Production Date{% endif %} <span class="text-rose-500">*</span>
+          </label>
+          <input
+            type="date"
+            name="production_date"
+            value="{% now 'Y-m-d' %}"
+            required
+            class="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-1.5">
+            {% if is_bangla %}শিফট ও কারিগরের নোট{% else %}Shift & Recipe Notes{% endif %}
+          </label>
+          <input
+            type="text"
+            name="notes"
+            placeholder="{% if is_bangla %}সকালের বেকিং শিফট — বন+বাটি, হলুদ কেক ও পাউরুটি{% else %}e.g. Morning Shift - Bun, Cake, Bread baking batch{% endif %}"
+            class="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 2: RAW MATERIALS CONSUMED (CLEAN PROFESSIONAL SINGLE-LINE TABLE) -->
+    <div class="rounded-2xl border border-rose-200/80 bg-white shadow-xs dark:border-rose-950/60 dark:bg-gray-900 overflow-hidden">
+      <!-- Section Header -->
+      <div class="border-b border-rose-100 bg-rose-50/60 p-4 sm:px-6 dark:border-rose-950/60 dark:bg-rose-950/20 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-bold text-rose-950 dark:text-rose-200 flex items-center gap-2">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-100 text-rose-700 dark:bg-rose-900/60 dark:text-rose-300 text-sm font-bold">1</span>
+            <span>{% if is_bangla %}১. ব্যবহৃত কাঁচামাল (গুদাম স্টক থেকে বাদ হবে){% else %}1. Raw Materials Consumed (Deducted from Stock){% endif %}</span>
+          </h2>
+          <p class="text-xs text-rose-700/80 dark:text-rose-400 mt-0.5">
+            {% if is_bangla %}
+            কাঁচামাল নির্বাচন করুন এবং ব্যবহারের পরিমাণ ইনপুট দিন।
+            {% else %}
+            Select raw materials and enter used quantities.
+            {% endif %}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          @click="addMaterialRow()"
+          class="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-rose-700 transition"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          {% if is_bangla %}+ আরও কাঁচামাল যোগ করুন{% else %}+ Add Raw Material{% endif %}
+        </button>
+      </div>
+
+      <!-- Professional Table (Single Horizontal Line per row) -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200 bg-gray-50/80 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-400">
+              <th class="py-3 px-4 w-12 text-center">#</th>
+              <th class="py-3 px-4 min-w-[260px]">{% if is_bangla %}কাঁচামালের নাম{% else %}Raw Material{% endif %}</th>
+              <th class="py-3 px-4 w-36 text-center">{% if is_bangla %}বর্তমান স্টক{% else %}Stock Available{% endif %}</th>
+              <th class="py-3 px-4 w-48">{% if is_bangla %}ব্যবহারের পরিমাণ{% else %}Quantity Used{% endif %}</th>
+              <th class="py-3 px-4 w-32 text-right">{% if is_bangla %}একক দর{% else %}Unit Rate{% endif %}</th>
+              <th class="py-3 px-4 w-36 text-right">{% if is_bangla %}মোট খরচ (৳){% else %}Total Cost (৳){% endif %}</th>
+              <th class="py-3 px-4 w-16 text-center">{% if is_bangla %}মুছুন{% else %}Action{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-800/80">
+            <template x-for="(row, index) in materialRows" :key="index">
+              <tr class="hover:bg-rose-50/20 dark:hover:bg-rose-950/10 transition">
+                <!-- Index -->
+                <td class="py-3 px-4 text-center text-xs font-bold text-gray-400 dark:text-gray-500" x-text="index + 1"></td>
+
+                <!-- Material Dropdown -->
+                <td class="py-3 px-4">
+                  <select
+                    name="material_id[]"
+                    x-model="row.materialId"
+                    @change="updateMaterialMeta(row, $event)"
+                    required
+                    class="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-900 outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  >
+                    <option value="">{% if is_bangla %}-- কাঁচামাল নির্বাচন করুন --{% else %}-- Select Raw Material --{% endif %}</option>
+                    {% for m in raw_materials %}
+                    <option
+                      value="{{ m.id }}"
+                      data-cost="{{ m.unit_cost }}"
+                      data-unit="{{ m.unit }}"
+                      data-stock="{{ m.current_stock }}"
+                    >
+                      {{ m.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </td>
+
+                <!-- Available Stock Badge -->
+                <td class="py-3 px-4 text-center whitespace-nowrap">
+                  <template x-if="row.maxStock !== null">
+                    <span
+                      class="inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-bold"
+                      :class="row.maxStock > 0 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300' : 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'"
+                    >
+                      <span x-text="row.maxStock + ' ' + (row.unit || '')"></span>
+                    </span>
+                  </template>
+                  <template x-if="row.maxStock === null">
+                    <span class="text-xs text-gray-400">-</span>
+                  </template>
+                </td>
+
+                <!-- Quantity Input (Clean Box with Unit outside) -->
+                <td class="py-3 px-4">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      name="material_qty[]"
+                      x-model.number="row.qty"
+                      placeholder="0.00"
+                      required
+                      class="w-28 rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-900 text-center outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    />
+                    <span class="text-xs font-bold text-gray-600 dark:text-gray-300 min-w-[28px]" x-text="row.unit"></span>
+                  </div>
+                  <template x-if="row.maxStock !== null && row.qty > row.maxStock">
+                    <p class="text-[10px] font-bold text-rose-500 mt-1">
+                      {% if is_bangla %}⚠️ গুদাম স্টকের চেয়ে বেশি!{% else %}⚠️ Exceeds warehouse stock!{% endif %}
+                    </p>
+                  </template>
+                </td>
+
+                <!-- Unit Cost -->
+                <td class="py-3 px-4 text-right text-xs font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                  <span x-text="row.unitCost > 0 ? ('৳' + Number(row.unitCost).toFixed(2) + (row.unit ? '/' + row.unit : '')) : '-'"></span>
+                </td>
+
+                <!-- Total Cost for row -->
+                <td class="py-3 px-4 text-right whitespace-nowrap">
+                  <span class="text-sm font-black text-rose-700 dark:text-rose-300" x-text="'৳' + (Number(row.qty || 0) * Number(row.unitCost || 0)).toFixed(2)">৳0.00</span>
+                </td>
+
+                <!-- Action: Delete Button -->
+                <td class="py-3 px-4 text-center">
+                  <button
+                    type="button"
+                    @click="removeMaterialRow(index)"
+                    x-show="materialRows.length > 1"
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-950 dark:hover:text-rose-400 transition"
+                    title="{% if is_bangla %}এই সারি মুছে ফেলুন{% else %}Delete Row{% endif %}"
+                  >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+          <!-- Table Footer Summary -->
+          <tfoot>
+            <tr class="border-t-2 border-gray-200 bg-gray-50/60 dark:border-gray-800 dark:bg-gray-800/40">
+              <td colspan="3" class="py-3 px-4">
+                <button
+                  type="button"
+                  @click="addMaterialRow()"
+                  class="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 transition"
+                >
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  {% if is_bangla %}+ আরও কাঁচামাল যোগ করুন{% else %}+ Add More Raw Material{% endif %}
+                </button>
+              </td>
+              <td colspan="2" class="py-3 px-4 text-right text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                {% if is_bangla %}মোট কাঁচামাল ব্যয়:{% else %}Total Material Cost:{% endif %}
+              </td>
+              <td class="py-3 px-4 text-right">
+                <span class="text-base font-black text-rose-700 dark:text-rose-300" x-text="'৳' + totalMaterialCost().toFixed(2)">৳0.00</span>
+              </td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- CARD 3: FINISHED BAKERY PRODUCTS (CLEAN SINGLE-LINE TABLE) -->
+    <div class="rounded-2xl border border-emerald-200/80 bg-white shadow-xs dark:border-emerald-950/60 dark:bg-gray-900 overflow-hidden">
+      <!-- Section Header -->
+      <div class="border-b border-emerald-100 bg-emerald-50/60 p-4 sm:px-6 dark:border-emerald-950/60 dark:bg-emerald-950/20 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-base font-bold text-emerald-950 dark:text-emerald-200 flex items-center gap-2">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300 text-sm font-bold">2</span>
+            <span>{% if is_bangla %}২. উৎপাদিত বেকারি পণ্য (স্টকে যোগ হবে){% else %}2. Finished Bakery Products (Added to Stock){% endif %}</span>
+          </h2>
+          <p class="text-xs text-emerald-700/80 dark:text-emerald-400 mt-0.5">
+            {% if is_bangla %}
+            উৎপাদিত সমাপ্ত পণ্য নির্বাচন করুন এবং মোট পিস লিখুন।
+            {% else %}
+            Select finished goods produced and enter total pieces baked.
+            {% endif %}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          @click="addProductRow()"
+          class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          {% if is_bangla %}+ আরও পণ্য যোগ করুন{% else %}+ Add Product{% endif %}
+        </button>
+      </div>
+
+      <!-- Table (Single Horizontal Line per row) -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200 bg-gray-50/80 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:border-gray-800 dark:bg-gray-800/60 dark:text-gray-400">
+              <th class="py-3 px-4 w-12 text-center">#</th>
+              <th class="py-3 px-4 min-w-[260px]">{% if is_bangla %}পণ্যের নাম{% else %}Product Name{% endif %}</th>
+              <th class="py-3 px-4 w-36 text-center">{% if is_bangla %}বর্তমান স্টক{% else %}Current Stock{% endif %}</th>
+              <th class="py-3 px-4 w-48">{% if is_bangla %}উৎপাদিত পিস{% else %}Quantity (Pcs){% endif %}</th>
+              <th class="py-3 px-4 w-48 text-right">{% if is_bangla %}প্রতি পিস উৎপাদন খরচ{% else %}BOM Cost / Unit{% endif %}</th>
+              <th class="py-3 px-4 w-16 text-center">{% if is_bangla %}মুছুন{% else %}Action{% endif %}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-800/80">
+            <template x-for="(row, index) in productRows" :key="index">
+              <tr class="hover:bg-emerald-50/20 dark:hover:bg-emerald-950/10 transition">
+                <!-- Index -->
+                <td class="py-3 px-4 text-center text-xs font-bold text-gray-400 dark:text-gray-500" x-text="index + 1"></td>
+
+                <!-- Product Dropdown -->
+                <td class="py-3 px-4">
+                  <select
+                    name="product_id[]"
+                    x-model="row.productId"
+                    @change="updateProductMeta(row, $event)"
+                    required
+                    class="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  >
+                    <option value="">{% if is_bangla %}-- পণ্য নির্বাচন করুন --{% else %}-- Select Product --{% endif %}</option>
+                    {% for p in products %}
+                    <option value="{{ p.id }}" data-stock="{{ p.stock_quantity }}" data-price="{{ p.selling_price }}">
+                      {{ p.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </td>
+
+                <!-- Current Stock Badge -->
+                <td class="py-3 px-4 text-center whitespace-nowrap">
+                  <template x-if="row.currentStock !== null">
+                    <span class="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                      <span x-text="row.currentStock + ' {% if is_bangla %}পিস{% else %}Pcs{% endif %}'"></span>
+                    </span>
+                  </template>
+                  <template x-if="row.currentStock === null">
+                    <span class="text-xs text-gray-400">-</span>
+                  </template>
+                </td>
+
+                <!-- Quantity Baked Input (Clean Box with Pcs outside) -->
+                <td class="py-3 px-4">
+                  <div class="flex items-center gap-2">
+                    <input
+                      type="number"
+                      min="1"
+                      name="product_qty[]"
+                      x-model.number="row.qty"
+                      placeholder="0"
+                      required
+                      class="w-28 rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-900 text-center outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                    />
+                    <span class="text-xs font-bold text-gray-600 dark:text-gray-300 min-w-[28px]">{% if is_bangla %}পিস{% else %}Pcs{% endif %}</span>
+                  </div>
+                </td>
+
+                <!-- Calculated Unit Production Cost -->
+                <td class="py-3 px-4 text-right whitespace-nowrap">
+                  <template x-if="totalUnitsBaked() > 0 && totalMaterialCost() > 0">
+                    <span class="inline-flex items-center gap-1 text-sm font-black text-emerald-700 dark:text-emerald-300">
+                      <span x-text="'৳' + (totalMaterialCost() / totalUnitsBaked()).toFixed(2) + ' / {% if is_bangla %}পিস{% else %}Pcs{% endif %}'"></span>
+                    </span>
+                  </template>
+                  <template x-if="totalUnitsBaked() === 0 || totalMaterialCost() === 0">
+                    <span class="text-xs text-gray-400">-</span>
+                  </template>
+                </td>
+
+                <!-- Action: Delete Button -->
+                <td class="py-3 px-4 text-center">
+                  <button
+                    type="button"
+                    @click="removeProductRow(index)"
+                    x-show="productRows.length > 1"
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-950 dark:hover:text-rose-400 transition"
+                    title="{% if is_bangla %}এই সারি মুছে ফেলুন{% else %}Delete Row{% endif %}"
+                  >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+          <!-- Table Footer Summary -->
+          <tfoot>
+            <tr class="border-t-2 border-gray-200 bg-gray-50/60 dark:border-gray-800 dark:bg-gray-800/40">
+              <td colspan="3" class="py-3 px-4">
+                <button
+                  type="button"
+                  @click="addProductRow()"
+                  class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 transition"
+                >
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  {% if is_bangla %}+ আরও পণ্য যোগ করুন{% else %}+ Add More Product{% endif %}
+                </button>
+              </td>
+              <td class="py-3 px-4 text-center">
+                <span class="text-sm font-black text-emerald-700 dark:text-emerald-300" x-text="totalUnitsBaked() + ' {% if is_bangla %}পিস{% else %}Pcs{% endif %}'">0 {% if is_bangla %}পিস{% else %}Pcs{% endif %}</span>
+              </td>
+              <td colspan="2" class="py-3 px-4 text-xs font-semibold text-gray-400 text-right">
+                {% if is_bangla %}মোট উৎপাদিত আইটেম{% else %}Total Baked Items{% endif %}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- CARD 4: Professional Action Bar -->
+    <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+        <svg class="h-4 w-4 text-amber-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+        <span>
+          {% if is_bangla %}
+          নিশ্চিত করার সাথে সাথে কাঁচামাল স্টক বিয়োগ হবে এবং নতুন তৈরি পণ্য গুদামে যোগ হবে।
+          {% else %}
+          Submitting this batch will deduct raw materials and add finished goods to warehouse stock.
+          {% endif %}
+        </span>
+      </div>
+
+      <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+        <a
+          href="{% url 'production_batches_list' %}"
+          hx-get="{% url 'production_batches_list' %}"
+          hx-target="#main-content"
+          hx-push-url="true"
+          class="rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-xs font-bold text-gray-700 shadow-xs hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition"
+        >
+          {% if is_bangla %}বাতিল{% else %}Cancel{% endif %}
+        </a>
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-600 px-6 py-2.5 text-xs font-bold text-white shadow-md hover:bg-amber-700 focus:ring-4 focus:ring-amber-500/20 transition"
+        >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          {% if is_bangla %}উৎপাদন নিশ্চিত করুন ও স্টক আপডেট{% else %}Save Batch & Update Stock{% endif %}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+function productionBatchApp() {
+  return {
+    materialRows: [
+      { materialId: '', qty: '', unitCost: 0, unit: '', maxStock: null },
+      { materialId: '', qty: '', unitCost: 0, unit: '', maxStock: null },
+      { materialId: '', qty: '', unitCost: 0, unit: '', maxStock: null }
+    ],
+    productRows: [
+      { productId: '', qty: '', currentStock: null }
+    ],
+    addMaterialRow() {
+      this.materialRows.push({ materialId: '', qty: '', unitCost: 0, unit: '', maxStock: null });
+    },
+    removeMaterialRow(index) {
+      if (this.materialRows.length > 1) {
+        this.materialRows.splice(index, 1);
+      }
+    },
+    updateMaterialMeta(row, event) {
+      const select = event.target;
+      const opt = select.options[select.selectedIndex];
+      if (opt && opt.value) {
+        row.unitCost = parseFloat(opt.getAttribute('data-cost')) || 0;
+        row.unit = opt.getAttribute('data-unit') || '';
+        row.maxStock = parseFloat(opt.getAttribute('data-stock')) || 0;
+      } else {
+        row.unitCost = 0;
+        row.unit = '';
+        row.maxStock = null;
+      }
+    },
+    addProductRow() {
+      this.productRows.push({ productId: '', qty: '', currentStock: null });
+    },
+    removeProductRow(index) {
+      if (this.productRows.length > 1) {
+        this.productRows.splice(index, 1);
+      }
+    },
+    updateProductMeta(row, event) {
+      const select = event.target;
+      const opt = select.options[select.selectedIndex];
+      if (opt && opt.value) {
+        row.currentStock = parseInt(opt.getAttribute('data-stock')) || 0;
+      } else {
+        row.currentStock = null;
+      }
+    },
+    totalMaterialCost() {
+      return this.materialRows.reduce((sum, r) => {
+        const q = parseFloat(r.qty) || 0;
+        const c = parseFloat(r.unitCost) || 0;
+        return sum + (q * c);
+      }, 0);
+    },
+    totalUnitsBaked() {
+      return this.productRows.reduce((sum, r) => {
+        const q = parseInt(r.qty) || 0;
+        return sum + q;
+      }, 0);
+    }
+  };
+}
+</script>
+{% endblock %}

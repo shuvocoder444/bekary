@@ -7,7 +7,7 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Bakery Sales Overview</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400">POS orders, invoices, and payment summaries</p>
         </div>
-        <a href="{% url 'pos_terminal' %}" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-xl shadow-xs transition">
+        <a href="{% url 'pos_terminal' %}" hx-get="{% url 'pos_terminal' %}" hx-target="#main-content" hx-push-url="true" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-xl shadow-xs transition">
             Launch POS Counter &rarr;
         </a>
     </div>
@@ -21,7 +21,7 @@
             Live orders and receipts are processed seamlessly through the Touch Counter POS with instant thermal receipt generation.
         </p>
         <div class="flex justify-center gap-4 pt-2">
-            <a href="{% url 'pos_terminal' %}" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-xl shadow-xs transition">
+            <a href="{% url 'pos_terminal' %}" hx-get="{% url 'pos_terminal' %}" hx-target="#main-content" hx-push-url="true" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium text-sm rounded-xl shadow-xs transition">
                 Open POS Billing
             </a>
             <a href="{% url 'transactions_list' %}" hx-get="{% url 'transactions_list' %}" hx-target="#main-content" hx-push-url="true" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium text-sm rounded-xl transition">

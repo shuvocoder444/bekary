@@ -6,10 +6,18 @@ from apps.products.models import Product
 
 
 class Customer(models.Model):
+    CUSTOMER_TYPE_CHOICES = (
+        ('retail', 'General Retail Customer'),
+        ('hawker', 'Hawker / Route Dealer / Wholesale'),
+    )
+
     name = models.CharField(max_length=150)
+    customer_type = models.CharField(max_length=20, choices=CUSTOMER_TYPE_CHOICES, default='retail')
     phone = models.CharField(max_length=20, unique=True, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
+    route_area = models.CharField('Delivery Route / Area', max_length=150, blank=True, null=True)
+    running_due = models.DecimalField('Current Due', max_digits=12, decimal_places=2, default=0.00)
     total_orders = models.PositiveIntegerField(default=0)
     total_spent = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -20,7 +28,8 @@ class Customer(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return f"{self.name} ({self.phone or 'No phone'})"
+        type_badge = " (Hawker)" if self.customer_type == 'hawker' else ""
+        return f"{self.name}{type_badge} ({self.phone or 'No phone'})"
 
 
 class Order(models.Model):
@@ -28,6 +37,7 @@ class Order(models.Model):
         ('pos', 'Counter POS Sale'),
         ('custom_cake', 'Custom Cake Pre-Order'),
         ('delivery', 'Home Delivery'),
+        ('hawker_dispatch', 'Hawker Route Delivery / Wholesale'),
     )
 
     STATUS_CHOICES = (

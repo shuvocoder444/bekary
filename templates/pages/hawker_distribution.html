@@ -1,0 +1,342 @@
+{% extends base_template %}
+{% load static %}
+
+{% block content %}
+<div class="w-full max-w-full space-y-6 p-4 sm:p-6 lg:p-8" x-data="hawkerDispatchApp()">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+        Hawker &amp; Route Distribution
+      </h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        Dispatch daily baked items (bread, cakes, patties) to hawkers/dealers, track deliveries, cash collections, and dues.
+      </p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <a
+        href="{% url 'hawker_sales_report' %}"
+        hx-get="{% url 'hawker_sales_report' %}"
+        hx-target="#main-content"
+        hx-push-url="true"
+        class="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 transition"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Hawker Due &amp; Sales Report
+      </a>
+      <a
+        href="{% url 'hawker_dispatch_create' %}"
+        hx-get="{% url 'hawker_dispatch_create' %}"
+        hx-target="#main-content"
+        hx-push-url="true"
+        class="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 transition"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        {% if is_bangla %}নতুন হকার চালান তৈরি{% else %}New Hawker Challan{% endif %}
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Metrics -->
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">Registered Hawkers</span>
+      <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-2">{{ hawkers.count }} Hawkers / Dealers</h3>
+      <p class="text-xs text-gray-400 mt-1">Delivery agents on active routes</p>
+    </div>
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Today's Dispatches</span>
+      <h3 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">৳{{ today_delivered_amount|floatformat:2 }}</h3>
+      <p class="text-xs text-gray-400 mt-1">{{ today_dispatches_count }} delivery challans generated today</p>
+    </div>
+    <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <span class="text-xs font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400">Total Outstanding Hawker Due</span>
+      <h3 class="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-2">৳{{ total_hawker_due|floatformat:2 }}</h3>
+      <p class="text-xs text-gray-400 mt-1">Total pending receivable balance</p>
+    </div>
+  </div>
+
+  <!-- Dispatches Table -->
+  <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900 overflow-hidden">
+    <div class="border-b border-gray-100 p-5 dark:border-gray-800 flex items-center justify-between">
+      <h2 class="text-base font-bold text-gray-900 dark:text-white">Recent Delivery Challans</h2>
+      <span class="text-xs text-gray-400">Showing last {{ dispatches.count }} records</span>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+        <thead class="bg-gray-50 text-xs font-semibold uppercase text-gray-500 dark:bg-gray-800/60 dark:text-gray-400">
+          <tr>
+            <th class="px-5 py-3.5">Challan / Invoice</th>
+            <th class="px-5 py-3.5">Hawker / Dealer</th>
+            <th class="px-5 py-3.5">Items Dispatched</th>
+            <th class="px-5 py-3.5 text-right">Total Bill</th>
+            <th class="px-5 py-3.5 text-right">Cash Paid</th>
+            <th class="px-5 py-3.5 text-right">Due</th>
+            <th class="px-5 py-3.5 text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+          {% for d in dispatches %}
+          <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-800/40 transition">
+            <td class="px-5 py-4">
+              <span class="font-mono text-xs font-bold text-gray-900 dark:text-white">{{ d.order_number }}</span>
+              <p class="text-[11px] text-gray-400">{{ d.created_at|date:"M d, Y H:i" }}</p>
+            </td>
+            <td class="px-5 py-4">
+              <span class="font-semibold text-gray-900 dark:text-white">{{ d.customer.name }}</span>
+              <p class="text-xs text-gray-400">{{ d.customer.phone|default:"No phone" }} {% if d.customer.route_area %}&bull; {{ d.customer.route_area }}{% endif %}</p>
+            </td>
+            <td class="px-5 py-4">
+              <div class="flex flex-wrap gap-1.5 max-w-sm">
+                {% for item in d.items.all %}
+                <span class="rounded bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                  {{ item.product.name }}: <b>{{ item.quantity }} {{ item.product.unit }}</b>
+                </span>
+                {% endfor %}
+              </div>
+            </td>
+            <td class="px-5 py-4 text-right font-bold text-gray-900 dark:text-white">
+              ৳{{ d.total_amount|floatformat:2 }}
+            </td>
+            <td class="px-5 py-4 text-right font-semibold text-emerald-600 dark:text-emerald-400">
+              ৳{{ d.paid_amount|floatformat:2 }}
+            </td>
+            <td class="px-5 py-4 text-right font-bold {% if d.due_amount > 0 %}text-rose-600 dark:text-rose-400{% else %}text-gray-400{% endif %}">
+              ৳{{ d.due_amount|floatformat:2 }}
+            </td>
+            <td class="px-5 py-4 text-center whitespace-nowrap">
+              <a
+                href="{% url 'order_receipt' d.order_number %}"
+                hx-get="{% url 'order_receipt' d.order_number %}"
+                hx-target="#main-content"
+                hx-push-url="true"
+                class="rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 transition"
+              >
+                Challan Receipt
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="px-5 py-12 text-center text-sm text-gray-400">
+              No hawker dispatches recorded yet. Click "New Hawker Challan" to issue goods to a dealer/hawker.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- NEW HAWKER CHALLAN MODAL -->
+  <div
+    x-show="showChallanModal"
+    class="fixed inset-0 z-99999 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-xs"
+    x-transition
+    x-cloak
+  >
+    <div
+      @click.outside="showChallanModal = false"
+      class="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-900 max-h-[90vh] overflow-y-auto"
+    >
+      <div class="flex items-center justify-between border-b border-gray-100 pb-4 dark:border-gray-800">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white">Issue Hawker Delivery Challan</h3>
+          <p class="text-xs text-gray-400">Select items given to hawker. Product stock will be deducted automatically.</p>
+        </div>
+        <button type="button" @click="showChallanModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form action="{% url 'hawker_dispatch_create' %}" method="POST" hx-post="{% url 'hawker_dispatch_create' %}" hx-target="#main-content" class="mt-5 space-y-5">
+        {% csrf_token %}
+
+        <!-- Hawker Selector -->
+        <div>
+          <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-300 mb-1">Select Hawker / Dealer</label>
+          <select
+            name="hawker_id"
+            required
+            class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none focus:border-amber-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          >
+            <option value="">-- Choose Hawker / Dealer --</option>
+            {% for h in hawkers %}
+            <option value="{{ h.id }}">{{ h.name }} ({{ h.phone }}) - Due: ৳{{ h.running_due }} {% if h.route_area %}&bull; Area: {{ h.route_area }}{% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Dispatched Items List -->
+        <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-4 dark:border-gray-800 dark:bg-gray-800/40 space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-bold uppercase text-gray-700 dark:text-gray-300">Products Issued to Hawker</h4>
+            <button
+              type="button"
+              @click="addItemRow()"
+              class="text-xs font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400"
+            >
+              + Add Product Row
+            </button>
+          </div>
+
+          <template x-for="(row, index) in itemRows" :key="index">
+            <div class="flex items-center gap-2">
+              <div class="flex-1">
+                <select
+                  name="product_id[]"
+                  x-model="row.productId"
+                  @change="updateRate(row)"
+                  required
+                  class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-900 outline-none focus:border-amber-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                >
+                  <option value="">-- Select Bakery Item --</option>
+                  {% for p in products %}
+                  <option value="{{ p.id }}" data-price="{{ p.selling_price }}">{{ p.name }} (Stock: {{ p.stock_quantity }} {{ p.unit }})</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="w-24">
+                <input
+                  type="number"
+                  min="1"
+                  name="quantity[]"
+                  x-model.number="row.qty"
+                  placeholder="Quantity"
+                  required
+                  class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-900 outline-none focus:border-amber-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-right"
+                />
+              </div>
+              <div class="w-24">
+                <input
+                  type="number"
+                  step="0.01"
+                  name="rate[]"
+                  x-model.number="row.rate"
+                  placeholder="Rate ৳"
+                  required
+                  class="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs text-gray-900 outline-none focus:border-amber-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-right"
+                />
+              </div>
+              <button
+                type="button"
+                @click="removeItemRow(index)"
+                x-show="itemRows.length > 1"
+                class="text-gray-400 hover:text-rose-600 transition p-1"
+              >
+                &times;
+              </button>
+            </div>
+          </template>
+        </div>
+
+        <!-- Financial Settlement -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-300 mb-1">Cash Paid / Collected</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              name="paid_amount"
+              x-model.number="paidAmount"
+              placeholder="0.00"
+              class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none focus:border-amber-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-300 mb-1">Payment Method</label>
+            <select
+              name="payment_method"
+              class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-900 outline-none focus:border-amber-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            >
+              <option value="cash">Cash</option>
+              <option value="mobile_banking">bKash / Nagad</option>
+              <option value="bank_transfer">Bank Transfer</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase text-gray-600 dark:text-gray-300 mb-1">Dispatch Notes / Remarks</label>
+          <input
+            type="text"
+            name="notes"
+            placeholder="e.g. Morning delivery for Route B"
+            class="w-full rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm text-gray-900 outline-none focus:border-amber-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          />
+        </div>
+
+        <!-- Financial Summary Banner -->
+        <div class="rounded-xl border border-gray-200 bg-amber-50/50 p-4 dark:border-gray-800 dark:bg-amber-950/20 flex items-center justify-between">
+          <div>
+            <span class="text-xs text-gray-500 dark:text-gray-400">Total Challan Bill:</span>
+            <span class="text-lg font-bold text-gray-900 dark:text-white ml-1.5" x-text="'৳' + totalBill().toFixed(2)"></span>
+          </div>
+          <div>
+            <span class="text-xs text-rose-500">New Due Added:</span>
+            <span class="text-lg font-bold text-rose-600 ml-1.5" x-text="'৳' + Math.max(0, totalBill() - paidAmount).toFixed(2)"></span>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-end gap-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+          <button
+            type="button"
+            @click="showChallanModal = false"
+            class="rounded-lg border border-gray-300 px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="rounded-lg bg-amber-600 px-5 py-2.5 text-xs font-bold text-white shadow-md hover:bg-amber-700 transition"
+          >
+            Issue Challan &amp; Print Receipt
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function hawkerDispatchApp() {
+  return {
+    showChallanModal: false,
+    paidAmount: 0,
+    itemRows: [
+      { productId: '', qty: '', rate: '' },
+      { productId: '', qty: '', rate: '' }
+    ],
+    addItemRow() {
+      this.itemRows.push({ productId: '', qty: '', rate: '' });
+    },
+    removeItemRow(index) {
+      this.itemRows.splice(index, 1);
+    },
+    updateRate(row) {
+      const select = event.target;
+      const opt = select.options[select.selectedIndex];
+      const price = opt.getAttribute('data-price');
+      if (price) {
+        row.rate = parseFloat(price);
+      }
+    },
+    totalBill() {
+      return this.itemRows.reduce((sum, r) => {
+        const q = parseFloat(r.qty) || 0;
+        const rate = parseFloat(r.rate) || 0;
+        return sum + (q * rate);
+      }, 0);
+    }
+  }
+}
+</script>
+{% endblock %}
